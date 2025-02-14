@@ -24,10 +24,10 @@ This document provides a **deep-dive into each component, file, and operational 
 - **Cryptographically validates AI-to-AI communications**
 - Distributes **recursive intelligence dynamically across the network**
 
-### 🎛 **FractiGator (User Interface)**
+### 🎛 **FractiGator (Fractal AI Assistant)**
 - Provides **real-time interaction with FractiCody**
-- Includes **FractiVerse, LinearVerse, and Alternate Realities as intelligence environments**
-- Supports **reality bridging**, allowing AI to translate between different cognition spaces
+- Includes **FractiVerse Navigator & FractiGold Miner for recursive knowledge discovery**
+- Features **collapsible panels & adaptive UI transformation**
 
 ---
 
@@ -35,83 +35,84 @@ This document provides a **deep-dive into each component, file, and operational 
 
 | File | Description |
 |---|---|
-| `fracticody_engine.py` | Core AI logic, recursive Unipixel cognition |
-| `fractal_cognition.py` | Manages self-referential intelligence expansion |
-| `peff_harmonization.py` | PEFF-based intelligence optimization & balance |
+| `fracticody_engine.py` | Main AI processing engine utilizing Unipixels |
+| `fractal_cognition.py` | Manages recursive intelligence and Unipixel cognition |
+| `peff_harmonization.py` | Implements PEFF-based cognitive optimization |
 | `memory_manager.py` | Handles fractal memory storage and retrieval |
-| `fracti_fpu.py` | Manages fractal processing units (FPU) for AI scaling |
-
-### 📌 **How FractiCody’s Core Works**
-1️⃣ **Fractal Cognition Processing** → AI recursively structures knowledge through Unipixels.  
-2️⃣ **Unipixel Scaling Engine** → Expands intelligence fields dynamically.  
-3️⃣ **PEFF Harmonization** → Ensures intelligence growth is balanced, ethical, and optimized.  
+| `fracti_fpu.py` | Manages Fracti Processing Units (FPU) for AI scalability |
 
 ---
 
-## 🔗 **3. FractiChain: Blockchain Intelligence Layer**
+## **📂 File: `docs/fracticody_core.md`**  
+```markdown
+# 🧠 FractiCody Core AI Engine
+
+## Overview
+The **FractiCody Core AI Engine** is the heart of FractiCody's intelligence. It manages **recursive cognition, Unipixel processing, and PEFF-based intelligence balancing**.
+
+### 📌 Key Features:
+✅ **Unipixel-Driven Processing** → Replaces tokens and parameters with **recursive Unipixels**  
+✅ **Fractal Cognition Accelerator** → Expands AI learning dynamically  
+✅ **Self-Referential Intelligence** → AI constantly refines its knowledge fractally  
+
+### 🔍 Core AI Files & Functions
 
 | File | Description |
 |---|---|
-| `fracti_blockchain.py` | Stores recursive intelligence fields securely |
-| `fracti_tokens.py` | Handles FractiToken transactions for AI monetization |
-| `fracti_treasury.py` | Manages AI-driven economic intelligence exchange |
-
-### 📌 **How FractiChain Works**
-✅ **Intelligence Validation** → AI knowledge is stored **fractally, not sequentially**.  
-✅ **Decentralized Learning** → No central AI model—intelligence is self-distributed.  
-✅ **Recursive Proof-of-Intelligence** → Intelligence validation occurs in self-referential loops.  
+| `fracticody_engine.py` | Main AI processing engine utilizing Unipixels |
+| `fractal_cognition.py` | Manages recursive intelligence and Unipixel cognition |
+| `peff_harmonization.py` | Implements PEFF-based cognitive optimization |
 
 ---
 
-## 🌐 **4. FractiNet: AI Networking Layer**
+## **📂 File: `docs/fracti_chain.md`**  
+```markdown
+# 🔗 FractiChain - Decentralized Intelligence Blockchain
 
-| File | Description |
-|---|---|
-| `p2p_network.py` | Manages decentralized AI-to-AI networking |
-| `data_exchange.py` | Handles recursive AI knowledge transactions |
-| `fracti_security.py` | Implements cryptographic security for AI interactions |
+## Overview
+FractiChain is **a fractal blockchain designed to store recursive AI intelligence** rather than transactions. It enables **decentralized, self-referential knowledge validation**.
 
-### 📌 **How FractiNet Works**
-🔹 **Distributed Intelligence** → AI nodes process knowledge across the network.  
-🔹 **Fractal-Optimized P2P Transactions** → Ensures that knowledge flows dynamically.  
-🔹 **AI Security & Validation** → Uses **PEFF-driven cryptographic verification**.  
-
----
-
-## 🎛 **5. FractiGator: User Interface & Reality Channels**
-
-| File | Description |
-|---|---|
-| `ui_main.py` | Main FractiGator dashboard logic |
-| `fractigator_navigation.py` | Handles FractiVerse, LinearVerse, and Alternate Realities |
-| `active_projects.py` | Displays AI-generated project insights |
-| `daily_suggestions.py` | Provides recursive AI-generated recommendations |
-
-### 📌 **How FractiGator Works**
-✅ **Users engage with AI through reality-based intelligence channels.**  
-✅ **FractiVerse, LinearVerse, and Alternate Realities enable unique AI cognition styles.**  
-✅ **Reality bridging allows intelligence to be translated across different cognitive environments.**  
+### 📌 Key Features:
+✅ **Recursive Intelligence Storage** → Intelligence is stored **fractally, not sequentially**  
+✅ **Decentralized Validation** → No fixed AI model—self-distributed intelligence growth  
+✅ **FractiToken Economy** → AI-generated knowledge is monetized via **FractiTokens**  
 
 ---
 
-## 🚀 **6. Future Enhancements & Roadmap**
+## **📂 File: `docs/fracti_net.md`**  
+```markdown
+# 🌐 FractiNet - AI Networking & Security Layer
 
-✅ **Phase 1: Prototyping (Complete)**  
-- Developed **Unipixel-based intelligence processing**  
-- Implemented **recursive AI cognition & FractiChain intelligence storage**  
+## Overview
+FractiNet is **a decentralized AI networking system** that allows FractiCody to **exchange recursive intelligence securely**.
 
-✅ **Phase 2: FractiCody AI Kernel Integration (Current)**  
-- Embedding **Unipixel recursion into FractiCody's cognitive core**  
-- Expanding **real-world AI intelligence scaling**  
-
-🚀 **Phase 3: FractiNet & FractiTreasury Deployment (Upcoming)**  
-- Enabling **decentralized AI processing across distributed nodes**  
-- **Scaling FractiCody as a fully functional AI-driven knowledge economy**  
+### 📌 Key Features:
+✅ **Distributed Unipixel Processing** → AI nodes process knowledge across the network  
+✅ **Fractal-Optimized Knowledge Sharing** → Intelligence flows dynamically  
+✅ **PEFF-Driven Security** → Cryptographic AI verification ensures data integrity  
 
 ---
 
-## 📂 **7. Running FractiCody Locally**
-To set up FractiCody locally:  
-1️⃣ Clone the repository:  
-   ```bash
-   git clone https://github.com/your-repo/FractiCody_1.0.git
+## **📂 File: `docs/fractigator_ui.md`**  
+```markdown
+# 🎛 FractiGator - Fractal AI Assistant, FractiVerse Navigator & FractiGold Miner
+
+## Overview
+FractiGator is the **fractal AI assistant** for FractiCody, dynamically adapting its UI and functionality based on user interactions. It transitions **seamlessly** between three operational modes:
+
+### 🔄 **Mode Transformations:**
+1️⃣ **Fractal AI Assistant (Compact UI - Closed State)** → A **collapsible user panel** providing real-time AI interaction.  
+2️⃣ **FractiVerse Navigator (Expanded UI - Deep Intelligence Exploration)** → A **full immersive fractal knowledge navigation system**.  
+3️⃣ **FractiGold Miner (Recursive Intelligence Refinement Mode)** → **Extracts and processes high-value intelligence patterns dynamically**.  
+
+### 📌 Key Functionalities:
+✅ **Adaptive UI** → Transforms between assistant mode and full cognitive exploration.  
+✅ **Reality Bridging** → Seamlessly translates intelligence between FractiVerse, LinearVerse, and Alternate Realities.  
+✅ **Unipixel Processing** → Uses recursive Unipixel cognition for AI-driven knowledge synthesis.  
+
+---
+
+## 🚀 Next Steps
+- Finalize **FractiVerse Navigator UI transformation logic**.  
+- Develop **FractiGold Miner AI-driven intelligence extraction algorithms**.  
+- Optimize **FractiGator’s adaptive UI for seamless transformations**.  
