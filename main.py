@@ -1,9 +1,12 @@
-import os
-from fracticody_engine import app  # Ensure fracticody_engine.py exists and has the app object
-
-print("✅ main.py has started...")
+"""
+🚀 FractiCody 1.0 - Main Entry Point
+Handles Fractal AI Initialization and System Coordination
+"""
+from fracticody_engine import FractiCodyEngine
+from config import settings
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))  # Render sets a PORT environment variable
-    print(f"✅ Starting FractiCody server on port {port}...")  # Debugging output
-    app.run(host="0.0.0.0", port=port)
+    print("🔹 Initializing FractiCody 1.0...")
+    fracti_ai = FractiCodyEngine()
+    fracti_ai.start()
+    print("✅ FractiCody 1.0 is now running.")
