@@ -2,6 +2,7 @@
 🧠 Fractal Cognition Engine - Fully Executable AI Core
 Implements recursive Unipixel cognition, adaptive learning, and PEFF Harmonization.
 """
+
 import hashlib
 import random
 import time
@@ -44,10 +45,13 @@ class Unipixel:
             "Recursive Depth": self.state["recursive_depth"],
             "Entropy": self.state["entropy"],
         }
-        class FractalCognition:
+
+# 🔹 Corrected FractalCognition Class (Fixed Indentation)
+class FractalCognition:
     def __init__(self):
         print("🧠 FractalCognition Engine Initialized!")
 
     def activate(self):
         print("🚀 FractalCognition is now active.")
+
 
