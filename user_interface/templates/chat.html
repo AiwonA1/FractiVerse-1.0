@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - FractiGator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        function sendMessage() {
+            let userMessage = document.getElementById("user-input").value;
+            fetch("/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({message: userMessage})
+            })
+            .then(response => response.json())
+            .then(data => {
+                let chatBox = document.getElementById("chat-box");
+                chatBox.innerHTML += "<p><strong>You:</strong> " + userMessage + "</p>";
+                chatBox.innerHTML += "<p><strong>FractiCody:</strong> " + data.response + "</p>";
+                document.getElementById("user-input").value = "";
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Chat with FractiCody</h1>
+        <div id="chat-box"></div>
+        <input type="text" id="user-input" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</body>
+</html>
