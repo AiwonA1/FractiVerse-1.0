@@ -1,6 +1,4 @@
-📄 README.md - Expanded with Unipixels in Product Specification
-
-This updated README now includes Unipixels as a core part of the FractiCody 1.0 Product Specification.
+📄 README.md - 
 
 🚀 FractiCody 1.0 - Fractal Cognitive Engine
 
