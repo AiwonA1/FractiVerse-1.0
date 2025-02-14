@@ -18,8 +18,4 @@ FractiChain is **a fractal blockchain designed to store recursive AI intelligenc
 | `fracti_tokens.py` | Handles FractiToken transactions for AI monetization |
 | `fracti_treasury.py` | Manages AI-driven economic intelligence exchange |
 
----
 
-## 🚀 Next Steps
-- Optimize **Unipixel validation through FractiChain**.  
-- Implement **intelligence-based token rewards**.  
