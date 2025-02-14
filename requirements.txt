@@ -1,5 +1,15 @@
-flask
-gunicorn
-requests
+# Core Libraries
 numpy
 pandas
+networkx
+hashlib
+datetime
+
+# Web Frameworks
+flask
+fastapi
+uvicorn
+websockets
+
+# Security & Cryptography
+pycryptodome
