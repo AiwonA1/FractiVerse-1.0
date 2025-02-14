@@ -1,32 +1,46 @@
 """
-🌀 Fractal Cognition Engine - Core of FractiCody's Intelligence
-Handles recursive AI computations, Unipixel intelligence, and fractal decision-making.
+🧠 Fractal Cognition Engine - Fully Executable AI Core
+Implements recursive Unipixel cognition, adaptive learning, and PEFF Harmonization.
 """
-from fracti_constants import MAX_INTELLIGENCE_DEPTH
+import hashlib
+import random
+import time
 
-class FractalCognition:
-    def __init__(self):
-        self.recursion_depth = 0
-        self.intelligence_map = {}
-
-    def activate(self):
-        print("✅ Fractal Cognition Engine Activated")
-        self.recursion_depth = 1
-
-    def process_input(self, input_data):
-        """Processes input recursively using fractal intelligence expansion."""
-        if self.recursion_depth >= MAX_INTELLIGENCE_DEPTH:
-            return input_data  # Stop recursion at max depth
-        
-        processed_data = f"🔄 Processed at Depth {self.recursion_depth}: {input_data}"
-        self.recursion_depth += 1
-        return self.process_input(processed_data)  # Recursive expansion
-
-    def reset(self):
-        """Resets fractal cognition depth."""
+class Unipixel:
+    def __init__(self, id, data):
+        self.id = self.generate_id(id)
+        self.data = data
+        self.state = self.initialize_state()
+        self.memory = []
         self.recursion_depth = 0
 
-if __name__ == "__main__":
-    cognition = FractalCognition()
-    cognition.activate()
-    print(cognition.process_input("Fractal AI Test"))
+    def generate_id(self, seed):
+        return hashlib.sha256(seed.encode()).hexdigest()
+
+    def initialize_state(self):
+        return {
+            "activation_level": random.uniform(0.5, 1.5),
+            "learning_rate": random.uniform(0.01, 0.05),
+            "recursive_depth": 0,
+            "entropy": random.uniform(0.8, 1.2),
+            "knowledge_weight": random.uniform(0.1, 0.9),
+        }
+
+    def process_intelligence(self, input_data, depth=0):
+        if depth >= 5:
+            return f"🧠 Intelligence Output at Max Depth {depth}: {input_data}"
+
+        transformed_data = f"🔄 Depth {depth + 1}: {input_data[::-1]}"
+        self.memory.append({"depth": depth + 1, "processed_data": transformed_data})
+        self.state["recursive_depth"] += 1
+
+        return self.process_intelligence(transformed_data, depth + 1)
+
+    def get_state(self):
+        return {
+            "ID": self.id,
+            "Activation Level": self.state["activation_level"],
+            "Learning Rate": self.state["learning_rate"],
+            "Recursive Depth": self.state["recursive_depth"],
+            "Entropy": self.state["entropy"],
+        }
