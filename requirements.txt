@@ -2,6 +2,7 @@
 numpy
 pandas
 networkx
+psutil
 
 # Web Frameworks
 flask
