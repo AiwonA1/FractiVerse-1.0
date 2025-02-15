@@ -5,9 +5,9 @@ Manages real-time scaling, cognitive load balancing, and efficiency optimization
 
 import random
 import time
-import psutil  # ✅ Added for system metrics
+import psutil  # ✅ Required for system metrics
 
-class FractiProcessingUnit:  # ✅ Ensured correct importable class
+class FractiProcessingUnit:
     def __init__(self):
         self.base_fpu_capacity = 100  # Baseline processing power units
         self.current_load = 0  # Real-time cognitive load
@@ -45,9 +45,15 @@ class FractiProcessingUnit:  # ✅ Ensured correct importable class
             "Scaling Factor": self.scale_factor,
         }
 
-    def get_cpu_usage(self):  # ✅ Added method to retrieve real CPU usage
-        """Fetches the current CPU utilization percentage."""
-        return psutil.cpu_percent(interval=1)  # Returns system CPU usage
+    ## ✅ NEW: System Monitoring Functions ##
+    def get_cpu_usage(self):
+        """Returns current CPU usage percentage."""
+        return psutil.cpu_percent(interval=1)
+
+    def get_memory_usage(self):
+        """Returns system memory usage in GB."""
+        mem = psutil.virtual_memory()
+        return round(mem.used / (1024 ** 3), 2)
 
 if __name__ == "__main__":
     fpu = FractiProcessingUnit()
@@ -55,4 +61,5 @@ if __name__ == "__main__":
     print(fpu.optimize_performance())
     print(fpu.recursive_load_balancing())
     print(fpu.get_fpu_status())
-    print(f"🔍 Current CPU Usage: {fpu.get_cpu_usage()}%")  # ✅ New CPU monitoring test
+    print(f"CPU Usage: {fpu.get_cpu_usage()}%")
+    print(f"Memory Usage: {fpu.get_memory_usage()} GB")
