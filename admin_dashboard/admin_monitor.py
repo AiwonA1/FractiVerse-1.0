@@ -1,29 +1,38 @@
 """
-📊 FractiCody Admin Monitor - AI Performance & Governance Tracking
-Monitors system-wide AI activities, resource usage, and intelligence scaling.
+🛠 FractiAdmin - AI System Monitoring & Administration
+Monitors and manages FractiCody ecosystem-wide performance.
 """
+
+import os
+import time
+from fracti_fpu import FractiProcessingUnit
+
 class AdminMonitor:
     def __init__(self):
-        self.performance_metrics = {
-            "CPU Usage": "15%",
-            "Memory Usage": "2.5GB",
-            "Active AI Nodes": 12,
-            "FractiChain Transactions": 158
+        self.fpu = FractiProcessingUnit()
+        self.system_metrics = {
+            "CPU Usage": "0%",
+            "Memory Usage": "0GB",
+            "Active AI Nodes": 0,
+            "FractiChain Transactions": 0
         }
 
-    def get_system_status(self):
-        """Returns an overview of FractiCody's current performance metrics."""
-        status = "\n".join([f"{k}: {v}" for k, v in self.performance_metrics.items()])
-        return f"📊 System Status:\n{status}"
+    def update_system_metrics(self):
+        """Updates live AI system metrics."""
+        self.system_metrics["CPU Usage"] = f"{self.fpu.get_cpu_usage()}%"
+        self.system_metrics["Memory Usage"] = f"{self.fpu.get_memory_usage()}GB"
+        self.system_metrics["Active AI Nodes"] = self.fpu.get_active_nodes()
+        self.system_metrics["FractiChain Transactions"] = self.fpu.get_transaction_count()
 
-    def update_metric(self, metric, value):
-        """Updates a specific system performance metric."""
-        if metric in self.performance_metrics:
-            self.performance_metrics[metric] = value
-            return f"✅ Updated {metric} to {value}"
-        return "❌ Invalid Metric"
+    def display_metrics(self):
+        """Displays the latest system status."""
+        self.update_system_metrics()
+        print("📊 **FractiCody System Status:**")
+        for key, value in self.system_metrics.items():
+            print(f"🔹 {key}: {value}")
 
 if __name__ == "__main__":
-    monitor = AdminMonitor()
-    print(monitor.get_system_status())
-    print(monitor.update_metric("CPU Usage", "20%"))
+    admin = AdminMonitor()
+    while True:
+        admin.display_metrics()
+        time.sleep(5)  # Refresh every 5 seconds
