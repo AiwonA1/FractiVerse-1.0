@@ -1,0 +1,13 @@
+# Core Libraries
+numpy
+pandas
+networkx
+
+# Web Frameworks
+flask
+fastapi
+uvicorn
+websockets
+
+# Security & Cryptography
+pycryptodomex
