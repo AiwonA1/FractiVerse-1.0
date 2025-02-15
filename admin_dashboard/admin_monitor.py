@@ -3,8 +3,14 @@
 Monitors and manages FractiCody ecosystem-wide performance.
 """
 
+import sys
 import os
-import time
+
+# Manually add the project root directory to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+# Now import the module
+from core.fracti_fpu import FractiProcessingUnit  # ✅ Absolute import
 from core.fracti_fpu import FractiProcessingUnit
 
 class AdminMonitor:
