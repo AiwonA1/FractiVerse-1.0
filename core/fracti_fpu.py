@@ -1,11 +1,11 @@
 """
 ⚙️ FractiCody FPU - Adaptive Processing Unit
-Manages real-time scaling, cognitive load balancing, and efficiency optimizations.
+Manages real-time scaling, cognitive load balancing, system metrics, and efficiency optimizations.
 """
 
 import random
 import time
-import psutil  # ✅ Required for system metrics
+import psutil  # ✅ Added for system resource tracking
 
 class FractiProcessingUnit:
     def __init__(self):
@@ -13,6 +13,8 @@ class FractiProcessingUnit:
         self.current_load = 0  # Real-time cognitive load
         self.scale_factor = 1.0  # Adjusts dynamically
         self.optimization_threshold = 0.85  # Triggers efficiency optimizations
+        self.active_nodes = 12  # Placeholder value for active AI nodes
+        self.fracti_chain_transactions = 158  # Placeholder for FractiChain transactions
 
     def adjust_fpu_load(self, task_complexity):
         """Dynamically scales FractiCody's processing power based on task demand."""
@@ -45,15 +47,24 @@ class FractiProcessingUnit:
             "Scaling Factor": self.scale_factor,
         }
 
-    ## ✅ NEW: System Monitoring Functions ##
+    ## ✅ New System Metrics Methods (Matching Admin Panel Expectations)
+
     def get_cpu_usage(self):
-        """Returns current CPU usage percentage."""
+        """Returns the current system CPU usage percentage."""
         return psutil.cpu_percent(interval=1)
 
     def get_memory_usage(self):
-        """Returns system memory usage in GB."""
-        mem = psutil.virtual_memory()
-        return round(mem.used / (1024 ** 3), 2)
+        """Returns the current system memory usage in GB."""
+        mem_info = psutil.virtual_memory()
+        return round(mem_info.used / (1024 ** 3), 2)  # Convert bytes to GB
+
+    def get_active_nodes(self):
+        """Returns the number of active AI processing nodes."""
+        return self.active_nodes
+
+    def get_fractichain_transactions(self):
+        """Returns the number of recorded FractiChain transactions."""
+        return self.fracti_chain_transactions
 
 if __name__ == "__main__":
     fpu = FractiProcessingUnit()
@@ -61,5 +72,7 @@ if __name__ == "__main__":
     print(fpu.optimize_performance())
     print(fpu.recursive_load_balancing())
     print(fpu.get_fpu_status())
-    print(f"CPU Usage: {fpu.get_cpu_usage()}%")
-    print(f"Memory Usage: {fpu.get_memory_usage()} GB")
+    print(f"🖥️ CPU Usage: {fpu.get_cpu_usage()}%")
+    print(f"💾 Memory Usage: {fpu.get_memory_usage()} GB")
+    print(f"🤖 Active AI Nodes: {fpu.get_active_nodes()}")
+    print(f"🔗 FractiChain Transactions: {fpu.get_fractichain_transactions()}")
