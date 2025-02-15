@@ -1,48 +1,98 @@
 """
-🔗 FractiChain - AI Memory & Decentralized Knowledge Ledger
-Handles the blockchain infrastructure for AI knowledge storage and verification.
+🔗 FractiChain - Decentralized AI Memory & Tokenization System
+Handles AI-powered blockchain transactions, tokenized knowledge, and FractiMining.
 """
-import hashlib
-import time
 
-class FractiBlock:
-    def __init__(self, index, transactions, previous_hash):
+import hashlib
+import json
+import time
+from typing import List, Dict
+from fracti_tokens import FractiToken
+from fracti_treasury import FractiTreasury
+
+class Block:
+    def __init__(self, index, previous_hash, transactions, timestamp=None):
         self.index = index
-        self.timestamp = time.time()
+        self.timestamp = timestamp or time.time()
         self.transactions = transactions
         self.previous_hash = previous_hash
-        self.hash = self.generate_hash()
+        self.nonce = 0
+        self.hash = self.compute_hash()
 
-    def generate_hash(self):
-        """Generates a unique hash for the block."""
-        block_string = f"{self.index}{self.timestamp}{self.transactions}{self.previous_hash}".encode()
-        return hashlib.sha256(block_string).hexdigest()
+    def compute_hash(self):
+        """Creates SHA-256 hash of the block content."""
+        block_string = json.dumps(self.__dict__, sort_keys=True)
+        return hashlib.sha256(block_string.encode()).hexdigest()
 
 class FractiBlockchain:
     def __init__(self):
-        self.chain = []
+        self.chain: List[Block] = []
+        self.pending_transactions: List[Dict] = []
         self.create_genesis_block()
+        self.fracti_treasury = FractiTreasury()
 
     def create_genesis_block(self):
-        """Creates the first block in the chain."""
-        genesis_block = FractiBlock(0, "Genesis Block", "0" * 64)
+        """Creates the first block in the blockchain."""
+        genesis_block = Block(index=0, previous_hash="0", transactions=[])
         self.chain.append(genesis_block)
 
-    def add_block(self, transactions):
-        """Adds a new block to the chain."""
-        previous_hash = self.chain[-1].hash
-        new_block = FractiBlock(len(self.chain), transactions, previous_hash)
+    def add_transaction(self, sender, recipient, amount, data=""):
+        """Adds a transaction to the pending transactions list."""
+        transaction = {
+            "sender": sender,
+            "recipient": recipient,
+            "amount": amount,
+            "data": data,
+            "timestamp": time.time()
+        }
+        self.pending_transactions.append(transaction)
+
+    def mine_block(self, miner_address):
+        """Mines a new block and adds it to the chain."""
+        if not self.pending_transactions:
+            return False
+
+        last_block = self.chain[-1]
+        new_block = Block(
+            index=len(self.chain),
+            previous_hash=last_block.hash,
+            transactions=self.pending_transactions
+        )
+
         self.chain.append(new_block)
-        return f"✅ Block {new_block.index} added with hash {new_block.hash}"
+        self.pending_transactions = []
 
-    def validate_chain(self):
-        """Validates the blockchain integrity."""
+        # Reward miner with FractiTokens
+        self.fracti_treasury.issue_tokens(miner_address, 10)
+        return new_block
+
+    def is_valid_chain(self):
+        """Verifies the integrity of the blockchain."""
         for i in range(1, len(self.chain)):
-            if self.chain[i].previous_hash != self.chain[i - 1].hash:
-                return "❌ Blockchain Integrity Compromised!"
-        return "✅ Blockchain Integrity Verified"
+            current = self.chain[i]
+            previous = self.chain[i - 1]
+            if current.previous_hash != previous.hash:
+                return False
+            if current.hash != current.compute_hash():
+                return False
+        return True
 
+    def get_last_block(self):
+        """Retrieves the latest block in the chain."""
+        return self.chain[-1]
+
+# 🔹 Example Usage
 if __name__ == "__main__":
     fractichain = FractiBlockchain()
-    print(fractichain.add_block("Unipixel Intelligence Update"))
-    print(fractichain.validate_chain())
+
+    # Add sample transactions
+    fractichain.add_transaction("User1", "User2", 50, "AI knowledge transfer")
+    fractichain.add_transaction("User3", "User4", 30, "FractiMining Reward")
+
+    # Mine a block
+    new_block = fractichain.mine_block("MinerNode1")
+
+    # Display blockchain status
+    print(f"✅ Blockchain Length: {len(fractichain.chain)}")
+    print(f"🔗 Last Block Hash: {fractichain.get_last_block().hash}")
+    print(f"💰 Treasury Balance: {fractichain.fracti_treasury.get_balance('MinerNode1')}")
