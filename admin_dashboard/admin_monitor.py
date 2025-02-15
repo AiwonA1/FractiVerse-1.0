@@ -5,7 +5,7 @@ Monitors and manages FractiCody ecosystem-wide performance.
 
 import os
 import time
-from core.fracti_fpu import FractiProcessingUnit
+from ..core.fracti_fpu import FractiProcessingUnit
 
 class AdminMonitor:
     def __init__(self):
