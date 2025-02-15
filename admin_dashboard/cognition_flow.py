@@ -1,22 +1,33 @@
 """
-🌀 Cognition Flow - Recursive Intelligence Visualization
-Tracks recursive AI decision structuring and cognitive mapping.
+🧠 FractiAdmin - Cognitive Flow Visualization
+Tracks real-time AI thought processes & Unipixel intelligence patterns.
 """
+
+import time
 import random
+from core.fractal_cognition import FractalCognition
+from blockchain.fracti_blockchain import FractiChain
 
 class CognitionFlow:
     def __init__(self):
-        self.flow_states = ["Stable", "Recursive Expansion", "Optimization Phase", "Deep Learning"]
+        self.cognition_engine = FractalCognition()
+        self.blockchain = FractiChain()
+        self.thought_log = []
 
-    def get_current_state(self):
-        """Returns the current cognitive state of the AI system."""
-        return f"🧠 Cognition Flow State: {random.choice(self.flow_states)}"
+    def capture_thought_process(self):
+        """Captures real-time AI thought processes."""
+        thought = self.cognition_engine.generate_cognitive_state()
+        self.thought_log.append(thought)
+        self.blockchain.store_thought(thought)
+        return thought
 
-    def reset_flow(self):
-        """Resets the cognition flow to a baseline state."""
-        return "🔄 Cognition Flow Reset to Stable Mode"
+    def display_cognitive_flow(self):
+        """Displays the live AI cognition stream."""
+        while True:
+            thought_state = self.capture_thought_process()
+            print(f"🧠 **FractiCody Thought Process:** {thought_state}")
+            time.sleep(random.uniform(1.5, 3.0))  # Simulated thought intervals
 
 if __name__ == "__main__":
-    cognition = CognitionFlow()
-    print(cognition.get_current_state())
-    print(cognition.reset_flow())
+    cognition_monitor = CognitionFlow()
+    cognition_monitor.display_cognitive_flow()
