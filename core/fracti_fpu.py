@@ -6,7 +6,7 @@ Manages real-time scaling, cognitive load balancing, and efficiency optimization
 import random
 import time
 
-class FractiFPU:
+class FractiProcessingUnit:  # ✅ Renamed for consistency in imports
     def __init__(self):
         self.base_fpu_capacity = 100  # Baseline processing power units
         self.current_load = 0  # Real-time cognitive load
@@ -44,8 +44,9 @@ class FractiFPU:
             "Scaling Factor": self.scale_factor,
         }
 
+# ✅ Ensure this module can be imported correctly
 if __name__ == "__main__":
-    fpu = FractiFPU()
+    fpu = FractiProcessingUnit()
     print(fpu.adjust_fpu_load(80))  # Example task complexity
     print(fpu.optimize_performance())
     print(fpu.recursive_load_balancing())
