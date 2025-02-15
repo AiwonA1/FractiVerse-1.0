@@ -1,27 +1,37 @@
 """
-🛡️ FractiCody Auditing - Security, Ethics, and Blockchain Integrity
-Monitors AI compliance with PEFF standards and FractiChain validation.
+🛠️ FractiAdmin 1.0 - Admin Control Panel for FractiCody
+Allows full ecosystem control, AI governance, and system monitoring.
 """
-class FractiAuditing:
-    def __init__(self):
-        self.security_events = []
 
-    def log_event(self, event):
-        """Logs security-related AI actions and transactions."""
-        self.security_events.append(event)
-        return f"📑 Security Event Logged: {event}"
+import os
+import uvicorn
+from fastapi import FastAPI
+from ui_navigation import UI_Navigation  # UI switching module
 
-    def list_events(self):
-        """Lists all logged security and ethics events."""
-        return f"🔍 Security Logs: {self.security_events if self.security_events else 'No Events Logged'}"
+# Initialize FastAPI app
+app = FastAPI()
 
-    def clear_logs(self):
-        """Clears the auditing logs."""
-        self.security_events = []
-        return "🗑 Security Logs Cleared"
+@app.get("/")
+def home():
+    return {
+        "message": "✅ FractiAdmin 1.0 is running!",
+        "admin_controls": [
+            "Monitor AI Nodes",
+            "Manage FractiChain Transactions",
+            "Issue FractiTokens",
+            "Adjust System Parameters",
+            "Broadcast Messages"
+        ],
+        "available_displays": UI_Navigation().get_available_displays()
+    }
+
+@app.get("/switch/{display}")
+def switch_display(display: str):
+    return UI_Navigation().switch_display(display)
 
 if __name__ == "__main__":
-    auditing = FractiAuditing()
-    print(auditing.log_event("FractiChain Transaction Verified"))
-    print(auditing.list_events())
-    print(auditing.clear_logs())
+    print("🔹 [ FractiAdmin 1.0 ▼ ] - Click to expand menu")
+
+    # Set the port dynamically based on Render's environment
+    port = int(os.environ.get("PORT", 8181))  # Default to 8181
+    uvicorn.run(app, host="0.0.0.0", port=port)
