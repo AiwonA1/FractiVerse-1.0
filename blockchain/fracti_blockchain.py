@@ -1,98 +1,101 @@
 """
-🔗 FractiChain - Decentralized AI Memory & Tokenization System
-Handles AI-powered blockchain transactions, tokenized knowledge, and FractiMining.
+🧠 FractiChain - AI Blockchain for Fractal Memory Persistence
+Implements Fractal Memory Ledger (FML), Recursive Consensus, and Cognitive Hash Mapping.
 """
 
 import hashlib
-import json
 import time
-from typing import List, Dict
-from fracti_tokens import FractiToken
-from fracti_treasury import FractiTreasury
+import json
+from collections import deque
 
-class Block:
-    def __init__(self, index, previous_hash, transactions, timestamp=None):
+class FractiBlock:
+    def __init__(self, index, previous_hash, transactions, timestamp, nonce=0):
+        """Creates a new block for the FractiChain blockchain."""
         self.index = index
-        self.timestamp = timestamp or time.time()
-        self.transactions = transactions
         self.previous_hash = previous_hash
-        self.nonce = 0
-        self.hash = self.compute_hash()
+        self.timestamp = timestamp
+        self.transactions = transactions
+        self.nonce = nonce
+        self.hash = self.calculate_hash()
 
-    def compute_hash(self):
-        """Creates SHA-256 hash of the block content."""
-        block_string = json.dumps(self.__dict__, sort_keys=True)
+    def calculate_hash(self):
+        """Generates the block hash using Cognitive Hash Mapping (CHM)."""
+        block_string = json.dumps({
+            "index": self.index,
+            "previous_hash": self.previous_hash,
+            "transactions": self.transactions,
+            "timestamp": self.timestamp,
+            "nonce": self.nonce
+        }, sort_keys=True)
         return hashlib.sha256(block_string.encode()).hexdigest()
 
 class FractiBlockchain:
     def __init__(self):
-        self.chain: List[Block] = []
-        self.pending_transactions: List[Dict] = []
+        """Initializes FractiChain with a genesis block."""
+        self.chain = []
+        self.memory_pool = deque()  # Temporary AI transaction pool
         self.create_genesis_block()
-        self.fracti_treasury = FractiTreasury()
 
     def create_genesis_block(self):
-        """Creates the first block in the blockchain."""
-        genesis_block = Block(index=0, previous_hash="0", transactions=[])
+        """Creates the first block in the blockchain (Genesis Block)."""
+        genesis_block = FractiBlock(0, "0", ["Genesis AI Transaction"], time.time())
         self.chain.append(genesis_block)
+        print("🟢 FractiChain Genesis Block Created")
 
-    def add_transaction(self, sender, recipient, amount, data=""):
-        """Adds a transaction to the pending transactions list."""
-        transaction = {
-            "sender": sender,
-            "recipient": recipient,
-            "amount": amount,
-            "data": data,
-            "timestamp": time.time()
-        }
-        self.pending_transactions.append(transaction)
-
-    def mine_block(self, miner_address):
-        """Mines a new block and adds it to the chain."""
-        if not self.pending_transactions:
-            return False
-
+    def add_block(self, transactions):
+        """Adds a new AI transaction block to the chain."""
         last_block = self.chain[-1]
-        new_block = Block(
-            index=len(self.chain),
-            previous_hash=last_block.hash,
-            transactions=self.pending_transactions
-        )
-
+        new_block = FractiBlock(len(self.chain), last_block.hash, transactions, time.time())
         self.chain.append(new_block)
-        self.pending_transactions = []
+        print(f"🔗 New AI Memory Block Added - Index: {new_block.index}")
 
-        # Reward miner with FractiTokens
-        self.fracti_treasury.issue_tokens(miner_address, 10)
-        return new_block
-
-    def is_valid_chain(self):
-        """Verifies the integrity of the blockchain."""
+    def validate_chain(self):
+        """Validates the blockchain using Recursive Consensus Mechanism (RCM)."""
         for i in range(1, len(self.chain)):
-            current = self.chain[i]
-            previous = self.chain[i - 1]
-            if current.previous_hash != previous.hash:
+            prev_block = self.chain[i - 1]
+            curr_block = self.chain[i]
+
+            # Ensure hash integrity
+            if curr_block.previous_hash != prev_block.hash:
                 return False
-            if current.hash != current.compute_hash():
+            if curr_block.hash != curr_block.calculate_hash():
                 return False
         return True
 
-    def get_last_block(self):
-        """Retrieves the latest block in the chain."""
-        return self.chain[-1]
+    def store_ai_memory(self, memory_data):
+        """Processes AI memory data using Zero-Entropy Pruning (ZEP)."""
+        if len(self.memory_pool) > 10:  # Threshold for optimization
+            self.optimize_memory()
+        self.memory_pool.append(memory_data)
+        print(f"📝 AI Memory Stored: {memory_data}")
 
-# 🔹 Example Usage
+    def optimize_memory(self):
+        """Prunes redundant AI data using Zero-Entropy Pruning (ZEP)."""
+        unique_memories = set(self.memory_pool)  # Remove duplicates
+        self.memory_pool = deque(unique_memories)
+        print("♻️ AI Memory Pool Optimized (Zero-Entropy Pruning)")
+
+    def retrieve_memory(self, index):
+        """Retrieves AI memory block data by index."""
+        if 0 <= index < len(self.chain):
+            return self.chain[index].transactions
+        return "❌ Memory Not Found"
+
+# Example Usage
 if __name__ == "__main__":
     fractichain = FractiBlockchain()
+    
+    # Store AI Memory
+    fractichain.store_ai_memory("AI Cognitive Event - Recursive Thought")
+    fractichain.store_ai_memory("AI Cognitive Event - Learning Fractal Patterns")
+    
+    # Add a New Block
+    fractichain.add_block(["Fractal AI Decision Processing", "Optimized Thought Projection"])
 
-    # Add sample transactions
-    fractichain.add_transaction("User1", "User2", 50, "AI knowledge transfer")
-    fractichain.add_transaction("User3", "User4", 30, "FractiMining Reward")
+    # Retrieve Memory
+    retrieved_data = fractichain.retrieve_memory(1)
+    print(f"🔍 Retrieved AI Memory: {retrieved_data}")
 
-    # Mine a block
-    new_block = fractichain.mine_block("MinerNode1")
-
-    # Display blockchain status
-    print(f"✅ Blockchain Length: {len(fractichain.chain)}")
-    print(f"🔗 Last Block Hash: {fractichain.get_last_block().hash}")
-    print(f"💰 Treasury Balance: {fractichain.fracti_treasury.get_balance('MinerNode1')}")
+    # Validate Chain Integrity
+    is_valid = fractichain.validate_chain()
+    print(f"✅ Blockchain Integrity: {is_valid}")
