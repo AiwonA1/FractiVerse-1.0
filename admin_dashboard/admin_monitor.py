@@ -1,60 +1,68 @@
 """
-📊 FractiAdmin 1.0 - Admin Monitoring Dashboard
-Monitors system performance, AI processing units, and blockchain transactions.
+📊 FractiAdmin 1.0 - System Monitoring
+Monitors system performance, AI processing, and FractiChain transactions.
 """
 
-import sys
 import os
-import uvicorn
+import psutil
 from fastapi import FastAPI
-
-# Ensure the 'core' directory is accessible
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from core.fracti_fpu import FractiProcessingUnit  # ✅ Fixed Import Path
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from starlette.requests import Request
 
 # Initialize FastAPI app
 app = FastAPI()
 
+# Setup templates for UI rendering
+templates = Jinja2Templates(directory="admin_dashboard/templates")
+
+
 class FractiAdminMonitor:
     def __init__(self):
-        self.fpu = FractiProcessingUnit()
         self.system_metrics = {
             "CPU Usage": "N/A",
             "Memory Usage": "N/A",
-            "Active AI Nodes": "N/A",
-            "FractiChain Transactions": "N/A"
+            "Active AI Nodes": 0,
+            "FractiChain Transactions": 0
         }
 
     def update_system_metrics(self):
-        """Gathers real-time system performance statistics from FractiFPU."""
-        self.system_metrics["CPU Usage"] = f"{self.fpu.get_cpu_usage()}%"
-        self.system_metrics["Memory Usage"] = f"{self.fpu.get_memory_usage()}GB"
-        self.system_metrics["Active AI Nodes"] = self.fpu.get_active_nodes()
-        self.system_metrics["FractiChain Transactions"] = self.fpu.get_transaction_count()
+        """Fetches and updates system performance metrics."""
+        self.system_metrics["CPU Usage"] = f"{psutil.cpu_percent()}%"
+        self.system_metrics["Memory Usage"] = f"{round(psutil.virtual_memory().total / (1024 ** 3), 2)}GB"
+        self.system_metrics["Active AI Nodes"] = self.get_active_nodes()
+        self.system_metrics["FractiChain Transactions"] = self.get_transaction_count()
 
-    def get_metrics(self):
-        """Returns system metrics as a dictionary."""
+    def get_active_nodes(self):
+        """Mock function to return active AI nodes."""
+        return 9  # Placeholder value
+
+    def get_transaction_count(self):
+        """Mock function to return FractiChain transactions."""
+        return 0  # Placeholder value
+
+    def get_system_metrics(self):
+        """Returns current system metrics."""
         self.update_system_metrics()
         return self.system_metrics
 
-# Create an instance of the admin monitor
-admin_monitor = FractiAdminMonitor()
 
-@app.get("/")
-def home():
-    """Admin UI API Home"""
-    return {
-        "message": "✅ FractiAdmin 1.0 Running",
-        "system_metrics": admin_monitor.get_metrics(),
-    }
+# Initialize monitoring instance
+admin = FractiAdminMonitor()
 
-@app.get("/metrics")
-def get_metrics():
-    """Fetch real-time system metrics."""
-    return admin_monitor.get_metrics()
 
+@app.get("/", response_class=HTMLResponse)
+def home(request: Request):
+    """Serves the Admin UI dashboard."""
+    return templates.TemplateResponse(
+        "dashboard.html",
+        {"request": request, "system_metrics": admin.get_system_metrics()}
+    )
+
+
+# If running locally
 if __name__ == "__main__":
-    # Set port dynamically from Render (default: 8181)
-    port = int(os.environ.get("PORT", 8181))
+    import uvicorn
+
+    port = int(os.environ.get("PORT", 8080))  # Default to 8080
     uvicorn.run(app, host="0.0.0.0", port=port)
