@@ -7,14 +7,7 @@ from flask import Flask, request, jsonify
 # Ensure Python detects the 'core' module properly
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "core")))
 
-# Import core components
-from core import FractalCognition, MemoryManager, FractiProcessingUnit
-
-
-# Ensure Python finds the 'core' module
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "core")))
-
-# Import core components correctly
+# Import core components (only once)
 from core.fractal_cognition import FractalCognition
 from core.memory_manager import MemoryManager
 from core.fracti_fpu import FractiProcessingUnit
