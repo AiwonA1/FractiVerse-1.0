@@ -36,8 +36,7 @@ class FractiCodyEngine:
     def process_input(self, user_input):
         """Processes user input using fractal cognition"""
         response = self.cognition.process_input(user_input)  # ✅ Directly return response
-        print(f"🔄 Processed Input: {user_input} | Response: {response}")  # ✅ Debugging
-        return response
+        return response  # ✅ No more cognitive logs in output
 
     def make_decision(self, context, options):
         """Uses the decision engine to make logical choices."""
@@ -54,10 +53,10 @@ def command():
         if not user_input:
             return jsonify({"error": "Invalid input. Command is required."}), 400
 
-        # ✅ Ensure correct response retrieval
+        # ✅ Only return natural response
         response = fracticody.process_input(user_input)
 
-        return jsonify({"response": response})  # ✅ Return the correct response
+        return jsonify({"response": response})  # ✅ Returns only meaningful responses
 
     except Exception as e:
         print(f"❌ Error processing command: {e}")
