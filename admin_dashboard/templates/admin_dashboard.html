@@ -1,4 +1,4 @@
-<!<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -13,6 +13,37 @@
     <p class="metric">Memory Usage: <span id="memory">{{ metrics.get("Memory Usage", "N/A") }}</span></p>
     <p class="metric">Active AI Nodes: <span id="nodes">{{ metrics.get("Active AI Nodes", "N/A") }}</span></p>
     <p class="metric">FractiChain Transactions: <span id="transactions">{{ metrics.get("FractiChain Transactions", "N/A") }}</span></p>
+
+    <button onclick="refreshData()">🔄 Refresh Data</button>
+
+    <!-- ✅ Command Input for FractiCody -->
+    <div class="command-container">
+        <input type="text" id="commandInput" placeholder="Enter command..." />
+        <button onclick="sendCommand()">▶️ Send</button>
+    </div>
+    <p id="commandResponse"></p>
+
+    <script>
+        function refreshData() {
+            location.reload();
+        }
+
+        function sendCommand() {
+            const command = document.getElementById("commandInput").value;
+            fetch("/command", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ command: command })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("commandResponse").innerText = data.response;
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    </script>
+</body>
+</html>
 
     <button onclick="refreshData()">🔄 Refresh Data</button>
 
