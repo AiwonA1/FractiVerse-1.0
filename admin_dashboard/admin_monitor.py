@@ -3,11 +3,7 @@ import os
 import psutil
 import time
 from flask import Flask, render_template, request, jsonify
-
-# Ensure Python recognizes the 'core' directory
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from core.fractal_cognition import FractiCognition  # Import FractiCody AI Engine
+from core.fractal_cognition import FractiCognition  # Adjusted import path
 
 # Initialize Components
 app = Flask(__name__)
@@ -31,8 +27,25 @@ def dashboard():
 @app.route('/command', methods=['POST'])
 def command():
     """Processes AI commands through FractiCody's cognition."""
-    user_input = request.json.get("command", "").strip()
-    response = fracti_ai.process_input(user_input)
+    user_input = request.json.get("command", "").strip().lower()
+    
+    # Special commands for recursive learning & deep cognition
+    if user_input in ["begin deep learning", "start deep learning"]:
+        fracti_ai.learning_active = True
+        response = "Deep Learning Activated. I will continuously optimize and improve."
+    elif user_input in ["stop deep learning", "pause deep learning"]:
+        fracti_ai.learning_active = False
+        response = "Deep Learning Paused."
+    elif user_input in ["optimize cognition", "increase intelligence"]:
+        fracti_ai.cognition_level += 0.5
+        response = f"Cognition optimized. New cognition level: {fracti_ai.cognition_level:.2f}"
+    elif user_input in ["what did i just say?", "recall last input"]:
+        last_memory = fracti_ai.retrieve_last()
+        response = f"Last recorded interaction: {last_memory}" if last_memory else "I have no prior memory stored yet."
+    else:
+        # Standard AI processing
+        response = fracti_ai.process_input(user_input)
+
     return jsonify({"response": response})
 
 if __name__ == '__main__':
