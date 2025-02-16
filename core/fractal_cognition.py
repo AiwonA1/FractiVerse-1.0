@@ -2,33 +2,40 @@ import time
 
 class FractiCognition:
     def __init__(self):
-        self.memory = {}
-        self.cognition_level = 1.0  # Starts at base cognition
-        self.learning_active = True  # Enables deep learning
+        self.memory = {}  # Stores learned facts
+        self.cognition_level = 1.0  # Tracks cognitive expansion
+        self.learning_active = True  # Enables continuous learning
 
     def store_interaction(self, user_input, response):
-        """Stores interactions for recursive learning."""
+        """Stores knowledge dynamically."""
         self.memory[user_input.lower()] = response
 
-    def retrieve_last(self):
-        """Retrieves the most recent stored fact, if any."""
-        return list(self.memory.items())[-1] if self.memory else None
+    def retrieve(self, user_input):
+        """Retrieves exact or related information from memory."""
+        user_input = user_input.lower().strip()
 
-    def process_input(self, user_input):
-        """Recursive AI cognition - adapts based on past interactions."""
-        user_input = user_input.strip().lower()
-
-        # Direct recall of learned facts
+        # Direct recall if exact match exists
         if user_input in self.memory:
             return self.memory[user_input]
 
-        # Try to find related knowledge
+        # Find closest related knowledge
         for stored_input, stored_response in self.memory.items():
             if user_input in stored_input:
-                return f"Building on what I know: {stored_response}"
+                return f"Expanding from what I know: {stored_response}"
 
-        # If it's new input, acknowledge and learn
-        response = f"I don't know yet. Please teach me."
+        # If no match, acknowledge and prepare to learn
+        return None  
+
+    def process_input(self, user_input):
+        """Processes input recursively and adapts dynamically."""
+        user_input = user_input.strip().lower()
+        retrieved_knowledge = self.retrieve(user_input)
+
+        if retrieved_knowledge:
+            return retrieved_knowledge  # Return known info or closest match
+
+        # If new input, encourage teaching
+        response = f"I don't know yet. Teach me, and I'll remember."
         self.store_interaction(user_input, response)
 
         return response
