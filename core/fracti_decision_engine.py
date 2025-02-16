@@ -28,4 +28,29 @@ class FractiDecisionEngine:
 
     def load_decision_memory(self):
         """Loads stored decision-making data."""
-        if os.path.exists("dec
+        if os.path.exists("decision_memory.json"):
+            try:
+                with open("decision_memory.json", "r") as file:
+                    return json.load(file)
+            except json.JSONDecodeError:
+                return {}  # Return empty if the file is corrupted
+        return {}
+
+    def save_decision_memory(self):
+        """Saves decision-making data to memory."""
+        with open("decision_memory.json", "w") as file:
+            json.dump(self.decisions, file)
+
+    def process_decision(self, context, options):
+        """Processes decision-making based on learned logic."""
+        context = context.lower().strip()
+        
+        if context in self.decisions:
+            return self.decisions[context]  # Return stored decision
+
+        # If no known decision, ask for learning input
+        response = f"I don't have a decision for '{context}' yet. What should I do?"
+        self.decisions[context] = response
+        self.save_decision_memory()
+        
+        return response
