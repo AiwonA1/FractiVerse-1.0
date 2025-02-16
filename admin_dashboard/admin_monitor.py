@@ -3,7 +3,12 @@ import os
 import psutil
 import time
 from flask import Flask, render_template, request, jsonify
-from core.fractal_cognition import FractiCognition  # Adjusted import path
+
+# Ensure Python finds `core` directory
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'core')))
+
+from fractal_cognition import FractiCognition  # Corrected Import
 
 # Initialize Components
 app = Flask(__name__)
