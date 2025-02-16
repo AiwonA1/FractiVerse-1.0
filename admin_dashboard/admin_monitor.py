@@ -4,11 +4,11 @@ import psutil
 import time
 from flask import Flask, render_template, request, jsonify
 
-# Ensure Python finds `core` directory
+# Ensure core module is accessible
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'core')))
 
-from fractal_cognition import FractiCognition  # Corrected Import
+# Import FractiCody AI Core
+from core.fractal_cognition import FractiCognition
 
 # Initialize Components
 app = Flask(__name__)
@@ -33,7 +33,7 @@ def dashboard():
 def command():
     """Processes AI commands through FractiCody's cognition."""
     user_input = request.json.get("command", "").strip().lower()
-    
+
     # Special commands for recursive learning & deep cognition
     if user_input in ["begin deep learning", "start deep learning"]:
         fracti_ai.learning_active = True
