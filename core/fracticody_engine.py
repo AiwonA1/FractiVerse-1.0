@@ -3,21 +3,53 @@ import os
 import psutil
 import time
 import json
-from flask import Flask, request, jsonify
-from core.fractal_cognition import FractiCognition  # Ensure this path is correct
 
-# Initialize FractiCody Engine
+# Ensure the script finds the 'core' directory
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+
+# Import core components
+from core.fractal_cognition import FractiCognition
+from core.memory_manager import MemoryManager
+from core.fracti_fpu import FractiProcessingUnit
+
 class FractiCodyEngine:
+    """Core engine for FractiCody AI"""
+    
     def __init__(self):
-        self.fracti_ai = FractiCognition()  # Initialize Cognition Engine
-
+        self.cognition = FractiCognition()
+        self.memory = MemoryManager()
+        self.fpu = FractiProcessingUnit()
+        self.cognition_level = 1.0
+        self.learning_active = True  # Enables deep learning
+    
     def process_input(self, user_input):
-        """Handles user input and recursively learns."""
-        response = self.fracti_ai.process_input(user_input)
-        return response
+        """Processes user input using fractal cognition"""
+        memory_data = self.memory.retrieve_last()
+        
+        if memory_data:
+            past_input, past_response = memory_data["input"], memory_data["response"]
+            response = f"Building from '{past_input}', I have learned: {past_response}"
+        else:
+            response = "I am forming my initial understanding..."
+        
+        # Enhance cognition level dynamically
+        self.cognition_level += 0.1
+        response = f"[Cognition Level {self.cognition_level:.2f}] {response}"
+        
+        # Apply FractiProcessingUnit optimizations
+        optimized_response = self.fpu.optimize_response(response)
+        
+        # Store learning data
+        self.memory.store_interaction(user_input, optimized_response)
+        
+        return optimized_response
+    
+    def activate_deep_learning(self, status=True):
+        """Enables or disables deep learning mode"""
+        self.learning_active = status
+        return "Deep Learning Activated." if status else "Deep Learning Paused."
 
-# Flask API to interact with FractiCody
-app = Flask(__name__)
+# Initialize the engine instance globally
 fracticody = FractiCodyEngine()
 
 @app.route('/command', methods=['POST'])
