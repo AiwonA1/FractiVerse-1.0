@@ -8,9 +8,9 @@ import json
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 # Import core components
-from core.fractal_cognition import FractiCognition
-from core.memory_manager import MemoryManager
-from core.fracti_fpu import FractiProcessingUnit
+from fractal_cognition import FractiCognition
+from memory_manager import MemoryManager
+from fracti_fpu import FractiProcessingUnit
 
 class FractiCodyEngine:
     """Core engine for FractiCody AI"""
