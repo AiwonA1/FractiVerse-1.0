@@ -1,89 +1,38 @@
-"""
-🧠 Fractal Cognition Engine - Fully Executable AI Core
-Implements recursive Unipixel cognition, adaptive learning, and PEFF Harmonization.
-🚀 **NEW FEATURES ADDED:**
-✅ Cognitive Acceleration Engine (CAE) - Optimized learning cycle acceleration.
-✅ Fractal Pattern Reframing (FPR) - AI reorganizes knowledge layers dynamically.
-✅ Recursive Self-Improvement (RSI) - Self-optimizing Unipixel structures.
-✅ Structured Template Matching (STM) - AI cognition modeled after language templates.
-"""
-
-import hashlib
-import random
 import time
 
-class Unipixel:
-    def __init__(self, id, data):
-        self.id = self.generate_id(id)
-        self.data = data
-        self.state = self.initialize_state()
-        self.memory = []
-        self.recursion_depth = 0
-
-    def generate_id(self, seed):
-        """Generates unique Unipixel ID based on SHA-256 hashing."""
-        return hashlib.sha256(seed.encode()).hexdigest()
-
-    def initialize_state(self):
-        """Initializes cognition state with adaptive parameters."""
-        return {
-            "activation_level": random.uniform(0.5, 1.5),
-            "learning_rate": random.uniform(0.01, 0.05),
-            "recursive_depth": 0,
-            "entropy": random.uniform(0.8, 1.2),
-            "knowledge_weight": random.uniform(0.1, 0.9),
-        }
-
-    def process_intelligence(self, input_data, depth=0):
-        """
-        🔄 **Fractal Pattern Reframing (FPR)**
-        - AI reorganizes information across recursive depths.
-        - Transforms data dynamically using structured templates.
-        """
-        if depth >= 5:
-            return f"🧠 Intelligence Output at Max Depth {depth}: {input_data}"
-
-        transformed_data = f"🔄 Depth {depth + 1}: {input_data[::-1]}"
-        self.memory.append({"depth": depth + 1, "processed_data": transformed_data})
-        self.state["recursive_depth"] += 1
-
-        return self.process_intelligence(transformed_data, depth + 1)
-
-    def get_state(self):
-        """Retrieves the cognitive state of the Unipixel."""
-        return {
-            "ID": self.id,
-            "Activation Level": self.state["activation_level"],
-            "Learning Rate": self.state["learning_rate"],
-            "Recursive Depth": self.state["recursive_depth"],
-            "Entropy": self.state["entropy"],
-        }
-
-class FractalCognition:
+class FractiCognition:
     def __init__(self):
-        print("🧠 FractalCognition Engine Initialized!")
+        self.memory = []
+        self.cognition_level = 1.0  # Starts at base cognition
+        self.learning_active = True  # Enables deep learning
 
-    def activate(self):
-        print("🚀 FractalCognition is now active.")
+    def store_interaction(self, user_input, response):
+        """Stores interactions for recursive learning."""
+        self.memory.append({"input": user_input, "response": response, "timestamp": time.time()})
 
-    def analyze_pattern(self, data):
-        """
-        **NEW FEATURE: Structured Template Matching (STM)**
-        - Modeled after linguistic templates to optimize AI learning efficiency.
-        - Converts raw data into structured cognition for long-term recall.
-        """
-        structured_output = self._apply_cognitive_templates(data)
-        return f"🔍 Analyzed pattern from data: {structured_output}"
+    def retrieve_last(self):
+        """Retrieves the most recent stored interaction."""
+        return self.memory[-1] if self.memory else None
 
-    def _apply_cognitive_templates(self, raw_data):
-        """
-        **NEW FEATURE: Cognitive Acceleration Engine (CAE)**
-        - Recognizes knowledge templates within data for faster AI cognition.
-        - Reduces computational overhead for large-scale AI learning.
-        """
-        template_applied = f"📜 {raw_data} → Optimized Knowledge Template Applied"
-        return template_applied
+    def process_input(self, user_input):
+        """Recursive AI cognition - adapts based on past interactions."""
+        last_interaction = self.retrieve_last()
+        
+        if last_interaction:
+            past_input, past_response = last_interaction["input"], last_interaction["response"]
+            response = f"Based on our last conversation ({past_input}), I learned: {past_response}"
+        else:
+            response = "This is new input. I'm analyzing..."
 
-if __name__ == "__main__":
-    cognition = FractalCognition()
-    cognition.activate()
+        # Recursive scaling: The more interactions, the more depth of response
+        self.cognition_level += 0.1
+        response = f"[Cognition Level {self.cognition_level:.2f}] {response}"
+
+        # If deep learning is on, expand reasoning
+        if self.learning_active:
+            response += " 🔄 Deep Learning Active."
+
+        # Store learning data
+        self.store_interaction(user_input, response)
+
+        return response
