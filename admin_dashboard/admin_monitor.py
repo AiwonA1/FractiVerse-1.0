@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
 import psutil
 
 app = Flask(__name__)
@@ -16,6 +16,23 @@ def get_system_metrics():
 def dashboard():
     metrics = get_system_metrics()
     return render_template("admin_dashboard.html", metrics=metrics)  # ✅ Pass metrics
+
+@app.route("/command", methods=["POST"])
+def process_command():
+    """Process user commands for FractiCody and FractiEcosystem components."""
+    command = request.json.get("command", "").strip().lower()
+
+    # ✅ Add real command handling here
+    if command == "status":
+        response = "✅ FractiCody is operational."
+    elif command == "reboot":
+        response = "♻️ System reboot initiated..."
+    elif command == "check chain":
+        response = f"🔗 FractiChain Transactions: {get_system_metrics()['FractiChain Transactions']}"
+    else:
+        response = f"⚠️ Unknown command: {command}"
+
+    return jsonify({"response": response})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8181, debug=True)
