@@ -47,12 +47,12 @@ class FractalCognition:
             json.dump(self.memory, file, indent=4)
 
     def process_input(self, user_input):
-        """Processes user input and learns from interactions."""
+        """Processes user input and retrieves known responses before learning."""
         user_input = user_input.lower().strip()
 
-        # ✅ Retrieve known responses from memory
+        # ✅ Retrieve known response first (PRIORITIZE MEMORY)
         if user_input in self.memory:
-            return self.memory[user_input]  # Now correctly returns stored response
+            return self.memory[user_input]  # ✅ Return learned answer
 
         # If new input, store it and prepare to learn
         response = "I don't know yet. Teach me, and I'll remember."
@@ -61,4 +61,4 @@ class FractalCognition:
         self.save_memory()
         self.save_cognition_level()
     
-        return response  # ✅ Ensure response is returned
+        return response  # ✅ Now only returns cognition update if response is unknown
