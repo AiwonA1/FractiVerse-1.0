@@ -1,27 +1,36 @@
 from flask import Flask, render_template, request, jsonify
 import psutil
 import time
-
-# Simulated FractiChain & FPU (Replace with real implementations)
-class FractiChain:
-    memory_store = []
-    
-    def store(self, user_input, response):
-        """Stores interaction in FractiChain memory."""
-        self.memory_store.append({"user_input": user_input, "response": response, "timestamp": time.time()})
-    
-    def retrieve_last(self):
-        """Retrieves the last stored interaction."""
-        return self.memory_store[-1] if self.memory_store else None
-
-class FractiProcessingUnit:
-    def optimize_response(self, response):
-        """Dummy optimizer to adjust responses dynamically."""
-        return response + " [Optimized]"
+from core.fractal_cognition import FractiCognition  # Import the improved cognition module
 
 # Initialize Components
 app = Flask(__name__)
-fractichain = FractiChain()
+fracti_ai = FractiCognition()  # Fractal Cognition Engine
+
+def get_system_metrics():
+    """Fetches real-time system statistics."""
+    return {
+        "CPU Usage": f"{psutil.cpu_percent()}%",
+        "Memory Usage": f"{psutil.virtual_memory().total / (1024**3):.2f}GB",
+        "Active AI Nodes": 9,  # Placeholder (expand later)
+        "FractiChain Transactions": len(fracti_ai.memory)  # Tracks AI's memory depth
+    }
+
+@app.route('/')
+def dashboard():
+    """Loads the admin dashboard with live metrics."""
+    metrics = get_system_metrics()
+    return render_template("admin_dashboard.html", metrics=metrics)
+
+@app.route('/command', methods=['POST'])
+def command():
+    """Processes AI commands through FractiCody's cognition."""
+    user_input = request.json.get("command", "").strip()
+    response = fracti_ai.process_input(user_input)
+    return jsonify({"response": response})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8181, debug=True)
 fpu = FractiProcessingUnit()
 
 def fracticody_cognition(user_input):
