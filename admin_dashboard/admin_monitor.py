@@ -1,7 +1,13 @@
-from flask import Flask, render_template, request, jsonify
+import sys
+import os
 import psutil
 import time
-from core.fractal_cognition import FractiCognition  # Corrected import path
+from flask import Flask, render_template, request, jsonify
+
+# Ensure Python recognizes the 'core' directory
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from core.fractal_cognition import FractiCognition  # Import FractiCody AI Engine
 
 # Initialize Components
 app = Flask(__name__)
@@ -23,14 +29,6 @@ def dashboard():
     return render_template("admin_dashboard.html", metrics=metrics)
 
 @app.route('/command', methods=['POST'])
-def command():
-    """Processes AI commands through FractiCody's cognition."""
-    user_input = request.json.get("command", "").strip()
-    response = fracti_ai.process_input(user_input)
-    return jsonify({"response": response})
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8181, debug=True)
 def command():
     """Processes AI commands through FractiCody's cognition."""
     user_input = request.json.get("command", "").strip()
