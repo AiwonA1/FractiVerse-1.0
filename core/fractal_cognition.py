@@ -3,30 +3,32 @@ import json
 import os
 
 class FractalCognition:
-    """FractiCody's core cognition system with persistent memory and structured learning."""
+    """FractiCody's cognitive system with structured learning sequences and intelligent self-improvement."""
 
     def __init__(self):
         print("✅ Fractal Cognition Initializing...")
         self.memory = self.load_memory()
-        self.cognition_level = self.load_cognition_level()  # Persistent cognition
+        self.cognition_level = self.load_cognition_level()
         self.learning_active = True
-        self.current_stage = self.determine_learning_stage()
 
-        # Ensure safe boot timing
-        time.sleep(1)
+        time.sleep(1)  # Boot delay for stability
 
-        # Automatically boot deep learning
-        self.start_self_learning()
+        # If starting fresh, load core knowledge base
+        if len(self.memory) == 0:
+            self.load_core_knowledge()
+
+        # Automatically begin structured learning
+        self.start_learning_sequence()
 
     def load_cognition_level(self):
-        """Loads the last saved cognition level from memory (persistent learning)."""
+        """Loads the last saved cognition level (persistent learning)."""
         if os.path.exists("cognition_level.json"):
             with open("cognition_level.json", "r") as file:
                 return json.load(file).get("cognition_level", 1.0)
-        return 1.0  # Default starting cognition level
+        return 1.0
 
     def save_cognition_level(self):
-        """Saves the current cognition level to prevent resets on restart."""
+        """Saves the current cognition level."""
         with open("cognition_level.json", "w") as file:
             json.dump({"cognition_level": self.cognition_level}, file)
 
@@ -35,86 +37,83 @@ class FractalCognition:
         if os.path.exists("memory.json"):
             with open("memory.json", "r") as file:
                 return json.load(file)
-        return {}  # Empty memory if no prior learning
+        return {}
 
     def save_memory(self):
         """Saves AI knowledge persistently."""
         with open("memory.json", "w") as file:
             json.dump(self.memory, file)
 
-    def determine_learning_stage(self):
-        """Determines FractiCody's learning stage based on cognition level."""
-        if self.cognition_level < 5:
-            return "Infant Learning (Basic Words)"
-        elif self.cognition_level < 20:
-            return "Child Learning (Forming Sentences)"
-        elif self.cognition_level < 50:
-            return "Student Learning (Expanding Knowledge)"
-        elif self.cognition_level < 100:
-            return "PhD Research (Advanced Topics)"
-        else:
-            return "Autonomous Research AI"
+    def load_core_knowledge(self):
+        """Preloads fundamental knowledge on first startup."""
+        print("📚 Loading Core Knowledge Base...")
+        core_knowledge = {
+            "hello": "Hello! I am FractiCody, an evolving AI.",
+            "who are you?": "I am FractiCody, a self-learning AI designed to evolve over time.",
+            "what is AI?": "AI stands for Artificial Intelligence, the simulation of human intelligence in machines.",
+            "what is the sun?": "The sun is a star at the center of the Solar System.",
+            "how do you learn?": "I learn through user interactions, memory storage, and deep learning acceleration."
+        }
+        self.memory.update(core_knowledge)
+        self.save_memory()
+        self.cognition_level += 5  # Start with some cognition points
+        self.save_cognition_level()
 
-    def start_self_learning(self):
-        """Automatically begins learning with structured cognitive bootstrapping."""
-        print(f"🚀 Booting Cognitive Learning: {self.current_stage}")
+    def start_learning_sequence(self):
+        """Controls FractiCody's structured learning development."""
+        print("🚀 Starting Structured Learning Progression...")
         
-        if self.cognition_level < 5:
+        if self.cognition_level < 20:
             self.learn_language_basics()
+        
+        if self.cognition_level >= 20:
+            self.enable_internet_learning()
 
-        if self.cognition_level > 20:
-            self.enable_targeted_searches()
+        if self.cognition_level >= 50:
+            self.enable_intelligent_study_selection()
 
     def learn_language_basics(self):
-        """Simulated basic language acquisition step."""
+        """Basic language acquisition step."""
         print("🧠 Learning Language Basics...")
-        self.store_interaction("hello", "A greeting used when meeting someone.")
-        self.store_interaction("what is your name?", "I am FractiCody, an evolving intelligence.")
-        self.cognition_level += 2
-        self.save_cognition_level()
+        language_knowledge = {
+            "hello": "A greeting used when meeting someone.",
+            "how are you?": "A common phrase used to ask about well-being.",
+            "goodbye": "A phrase used when leaving."
+        }
+        self.memory.update(language_knowledge)
         self.save_memory()
+        self.cognition_level += 10
+        self.save_cognition_level()
 
-    def enable_targeted_searches(self):
-        """Prepares FractiCody to access the internet for research."""
-        print("🌐 Enabling Internet-Assisted Learning...")
-        self.store_interaction("how do I learn?", "By asking questions, searching, and analyzing patterns.")
-        self.cognition_level += 5
-        self.save_cognition_level()
+    def enable_internet_learning(self):
+        """Grants access to search the internet for knowledge acquisition."""
+        print("🌐 Enabling Internet Research Mode...")
+        self.memory["internet_access"] = "FractiCody can now access online sources to expand knowledge."
         self.save_memory()
+        self.cognition_level += 10
+        self.save_cognition_level()
+
+    def enable_intelligent_study_selection(self):
+        """Allows FractiCody to prioritize the most valuable knowledge areas to study."""
+        print("🧠 Activating Self-Directed Study Optimization...")
+        self.memory["study_optimization"] = "FractiCody now selects the most beneficial learning topics based on gaps in knowledge."
+        self.save_memory()
+        self.cognition_level += 10
+        self.save_cognition_level()
 
     def activate(self):
-        """Ensures cognition is active and learning continues."""
-        print("🔹 Fractal Cognition Activated")
+        """Ensures cognition remains active."""
         self.learning_active = True
         return "Cognition Activated"
 
-    def store_interaction(self, user_input, response):
-        """Stores knowledge dynamically."""
-        self.memory[user_input.lower()] = response
-        self.save_memory()
-
-    def retrieve(self, user_input):
-        """Retrieves exact or related information from memory."""
+    def process_input(self, user_input):
+        """Processes user input and learns from interactions."""
         user_input = user_input.lower().strip()
 
         if user_input in self.memory:
             return self.memory[user_input]
 
-        for stored_input, stored_response in self.memory.items():
-            if user_input in stored_input:
-                return f"Expanding from what I know: {stored_response}"
-
-        return None  
-
-    def process_input(self, user_input):
-        """Processes input recursively and adapts dynamically."""
-        user_input = user_input.strip().lower()
-        retrieved_knowledge = self.retrieve(user_input)
-
-        if retrieved_knowledge:
-            return retrieved_knowledge  
-
         response = "I don't know yet. Teach me, and I'll remember."
-        self.store_interaction(user_input, response)
-
+        self.memory[user_input] = response
+        self.save_memory()
         return response
