@@ -5,12 +5,16 @@ import json
 from flask import Flask, request, jsonify
 
 # Ensure Python detects the 'core' module properly
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "core")))
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
-# Import core components (only once)
-from core.fractal_cognition import FractalCognition
-from core.memory_manager import MemoryManager
-from core.fracti_fpu import FractiProcessingUnit
+# Import core components (ensuring proper module detection)
+try:
+    from core.fractal_cognition import FractalCognition
+    from core.memory_manager import MemoryManager
+    from core.fracti_fpu import FractiProcessingUnit
+except ImportError as e:
+    print(f"Error importing core modules: {e}")
+    raise
 
 # Initialize Flask
 app = Flask(__name__)
@@ -29,6 +33,7 @@ class FractiCodyEngine:
 
     def process_input(self, user_input):
         """Processes user input using fractal cognition"""
+        user_input = user_input.strip().lower()
         memory_data = self.memory.retrieve_last()
 
         if memory_data:
@@ -58,10 +63,18 @@ class FractiCodyEngine:
 @app.route('/command', methods=['POST'])
 def command():
     """Processes AI commands through FractiCody's cognition."""
-    user_input = request.json.get("command", "").strip()
-    fracticody = FractiCodyEngine()  # ✅ Initialize only when called
-    response = fracticody.process_input(user_input)
-    return jsonify({"response": response})
+    try:
+        user_input = request.json.get("command", "").strip()
+        if not user_input:
+            return jsonify({"error": "Invalid input. Command is required."}), 400
+
+        fracticody = FractiCodyEngine()  # ✅ Initialize only when called
+        response = fracticody.process_input(user_input)
+        return jsonify({"response": response})
+
+    except Exception as e:
+        print(f"Error processing command: {e}")
+        return jsonify({"error": "An error occurred processing your request."}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8181, debug=True)
