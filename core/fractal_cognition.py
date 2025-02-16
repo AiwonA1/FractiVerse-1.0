@@ -47,18 +47,18 @@ class FractalCognition:
             json.dump(self.memory, file, indent=4)
 
     def process_input(self, user_input):
-        """Processes user input and retrieves known responses before learning."""
+        """Processes user input and prioritizes retrieving human-like responses."""
         user_input = user_input.lower().strip()
 
-        # ✅ Retrieve known response first (PRIORITIZE MEMORY)
+        # ✅ Step 1: Return the answer if already learned
         if user_input in self.memory:
-            return self.memory[user_input]  # ✅ Return learned answer
+            return self.memory[user_input]  # ✅ Now only returns real responses
 
-        # If new input, store it and prepare to learn
-        response = "I don't know yet. Teach me, and I'll remember."
+        # ✅ Step 2: If unknown, provide a more conversational response
+        response = "I haven't learned that yet. Can you teach me?"
         self.memory[user_input] = response
-        self.cognition_level += 0.10  # Ensure cognition level increments
+        self.cognition_level += 0.10  # Cognition updates in background
         self.save_memory()
         self.save_cognition_level()
     
-        return response  # ✅ Now only returns cognition update if response is unknown
+        return response  # ✅ Now returns conversational response, not cognition updates
