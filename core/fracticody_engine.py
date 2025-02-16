@@ -3,29 +3,35 @@ import os
 import psutil
 import time
 import json
+from flask import Flask, request, jsonify
 
-# Ensure the script finds the 'core' directory
-sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+# Ensure Python finds the 'core' module
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "core")))
 
-# Import core components
-from fractal_cognition import FractiCognition
-from memory_manager import MemoryManager
-from fracti_fpu import FractiProcessingUnit
+# Import core components correctly
+from core.fractal_cognition import FractalCognition
+from core.memory_manager import MemoryManager
+from core.fracti_fpu import FractiProcessingUnit
+
+# Initialize Flask
+app = Flask(__name__)
 
 class FractiCodyEngine:
     """Core engine for FractiCody AI"""
     
     def __init__(self):
-        self.cognition = FractiCognition()
+        print("Initializing FractiCody Engine...")
+        self.cognition = FractalCognition()
         self.memory = MemoryManager()
         self.fpu = FractiProcessingUnit()
         self.cognition_level = 1.0
         self.learning_active = True  # Enables deep learning
-    
+        time.sleep(1)  # Prevents race conditions during initialization
+
     def process_input(self, user_input):
         """Processes user input using fractal cognition"""
         memory_data = self.memory.retrieve_last()
-        
+
         if memory_data:
             past_input, past_response = memory_data["input"], memory_data["response"]
             response = f"Building from '{past_input}', I have learned: {past_response}"
@@ -49,13 +55,12 @@ class FractiCodyEngine:
         self.learning_active = status
         return "Deep Learning Activated." if status else "Deep Learning Paused."
 
-# Initialize the engine instance globally
-fracticody = FractiCodyEngine()
-
+# Initialize the engine inside Flask route to prevent premature execution
 @app.route('/command', methods=['POST'])
 def command():
     """Processes AI commands through FractiCody's cognition."""
     user_input = request.json.get("command", "").strip()
+    fracticody = FractiCodyEngine()  # ✅ Initialize only when called
     response = fracticody.process_input(user_input)
     return jsonify({"response": response})
 
