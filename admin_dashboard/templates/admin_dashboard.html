@@ -3,26 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FractiAdmin 1.0 Dashboard</title>
+    <title>🚀 FractiAdmin 1.0 Dashboard</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #121212; color: white; text-align: center; }
-        .container { max-width: 600px; margin: auto; padding: 20px; }
-        h1 { font-size: 24px; }
-        .metrics { margin-top: 20px; }
-        .metric { font-size: 18px; margin: 10px 0; }
-        .command-input { width: 100%; padding: 10px; margin-top: 20px; font-size: 16px; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+        .metrics-container {
+            max-width: 600px;
+            margin: auto;
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        h1 { color: #FFD700; }
+        p { font-size: 18px; margin: 10px 0; }
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover { background: #0056b3; }
     </style>
     <script>
         function updateMetrics() {
             fetch('/metrics')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("cpu").innerText = data["CPU Usage"];
-                    document.getElementById("memory").innerText = data["Memory Usage"];
-                    document.getElementById("nodes").innerText = data["Active AI Nodes"];
-                    document.getElementById("transactions").innerText = data["FractiChain Transactions"];
-                });
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("cpu").innerText = data["CPU Usage"];
+                document.getElementById("memory").innerText = data["Memory Usage"];
+                document.getElementById("nodes").innerText = data["Active AI Nodes"];
+                document.getElementById("transactions").innerText = data["FractiChain Transactions"];
+            })
+            .catch(() => alert("⚠️ Error fetching metrics. Server might be down."));
         }
+    </script>
+</head>
+<body>
+    <h1>🚀 FractiAdmin 1.0 Dashboard</h1>
+    <div class="metrics-container">
+        <p><strong>CPU Usage:</strong> <span id="cpu">Click "Refresh Data"</span></p>
+        <p><strong>Memory Usage:</strong> <span id="memory">Click "Refresh Data"</span></p>
+        <p><strong>Active AI Nodes:</strong> <span id="nodes">Click "Refresh Data"</span></p>
+        <p><strong>FractiChain Transactions:</strong> <span id="transactions">Click "Refresh Data"</span></p>
+    </div>
+    <button onclick="updateMetrics()">🔄 Refresh Data</button>
+</body>
+</html>
         setInterval(updateMetrics, 5000);
     </script>
 </head>
