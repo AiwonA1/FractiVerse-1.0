@@ -13,17 +13,52 @@ class FractalCognition:
 
         time.sleep(1)  # Boot delay for stability
 
-        # If memory is empty, load core knowledge base
         if not self.memory:
             self.load_core_knowledge()
 
-        # Ensure structured learning progression starts
-        self.start_learning_sequence()
-
     def load_cognition_level(self):
-        """Loads the last saved cognition level (persistent learning)."""
+        """Loads the last saved cognition level."""
         if os.path.exists("cognition_level.json"):
-            with open("cognition_level.json", "r") as file:
+            try:
+                with open("cognition_level.json", "r") as file:
+                    return json.load(file).get("cognition_level", 1.0)
+            except json.JSONDecodeError:
+                return 1.0
+        return 1.0
+
+    def save_cognition_level(self):
+        """Saves the cognition level."""
+        with open("cognition_level.json", "w") as file:
+            json.dump({"cognition_level": self.cognition_level}, file, indent=4)
+
+    def load_memory(self):
+        """Loads stored AI knowledge."""
+        if os.path.exists("memory.json"):
+            try:
+                with open("memory.json", "r") as file:
+                    return json.load(file)
+            except json.JSONDecodeError:
+                return {}
+        return {}
+
+    def save_memory(self):
+        """Saves AI knowledge."""
+        with open("memory.json", "w") as file:
+            json.dump(self.memory, file, indent=4)
+
+    def process_input(self, user_input):
+        """Processes user input and learns from interactions."""
+        user_input = user_input.lower().strip()
+
+        if user_input in self.memory:
+            return self.memory[user_input]
+
+        response = "I don't know yet. Teach me, and I'll remember."
+        self.memory[user_input] = response
+        self.cognition_level += 0.10
+        self.save_memory()
+        self.save_cognition_level()
+        return response
                 return json.load(file).get("cognition_level", 1.0)
         return 1.0  # Default cognition level
 
