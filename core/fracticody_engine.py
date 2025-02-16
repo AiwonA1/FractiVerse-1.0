@@ -1,9 +1,15 @@
 import sys
 import os
-import psutil
 import time
 import json
 from flask import Flask, request, jsonify
+
+# Ensure Python detects the 'core' module properly
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "core")))
+
+# Import core components
+from core import FractalCognition, MemoryManager, FractiProcessingUnit
+
 
 # Ensure Python finds the 'core' module
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "core")))
