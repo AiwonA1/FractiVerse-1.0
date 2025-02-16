@@ -1,6 +1,4 @@
 import time
-import sys
-import os
 import json
 
 class FractalCognition:
@@ -41,7 +39,7 @@ class FractalCognition:
             return retrieved_knowledge  # Return known info or closest match
 
         # If new input, encourage teaching
-        response = f"I don't know yet. Teach me, and I'll remember."
+        response = "I don't know yet. Teach me, and I'll remember."
         self.store_interaction(user_input, response)
 
         return response
