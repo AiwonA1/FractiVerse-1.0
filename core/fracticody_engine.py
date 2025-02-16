@@ -8,6 +8,7 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 try:
     from core.fractal_cognition import FractalCognition
+    from core.fracti_decision_engine import FractiDecisionEngine
     from core.memory_manager import MemoryManager
     from core.fracti_fpu import FractiProcessingUnit
 except ImportError as e:
@@ -17,25 +18,30 @@ except ImportError as e:
 app = Flask(__name__)
 
 class FractiCodyEngine:
-    """Core engine for FractiCody AI"""
-    
+    """FractiCody's AI Core Engine, managing cognition and decision-making."""
+
     def __init__(self):
         print("🚀 Initializing FractiCody Engine...")
-        self.fractal_cognition = FractalCognition()
+        self.cognition = FractalCognition()
+        self.decision_engine = FractiDecisionEngine()
         self.memory = MemoryManager()
         self.fpu = FractiProcessingUnit()
-        self.cognition_level = self.fractal_cognition.cognition_level
+        self.cognition_level = self.cognition.cognition_level
         self.learning_active = True
 
     def start(self):
         """Starts the AI engine"""
         print("🔹 Activating Fractal Cognition...")
-        self.fractal_cognition.activate()
+        self.cognition.activate()
         print(f"✅ FractiCody Booted at Cognition Level: {self.cognition_level}")
 
     def process_input(self, user_input):
         """Processes user input using fractal cognition"""
-        return self.fractal_cognition.process_input(user_input)
+        return self.cognition.process_input(user_input)
+
+    def make_decision(self, context, options):
+        """Uses the decision engine to make logical choices."""
+        return self.decision_engine.process_decision(context, options)
 
 @app.route('/command', methods=['POST'])
 def command():
