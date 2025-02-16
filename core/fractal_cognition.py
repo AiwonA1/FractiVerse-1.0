@@ -3,7 +3,7 @@ import json
 import os
 
 class FractalCognition:
-    """FractiCody's cognitive system with structured learning sequences and intelligent self-improvement."""
+    """FractiCody's cognitive system with structured learning sequences and persistent memory."""
 
     def __init__(self):
         print("✅ Fractal Cognition Initializing...")
@@ -13,11 +13,11 @@ class FractalCognition:
 
         time.sleep(1)  # Boot delay for stability
 
-        # If starting fresh, load core knowledge base
-        if len(self.memory) == 0:
+        # If memory is empty, load core knowledge base
+        if not self.memory:
             self.load_core_knowledge()
 
-        # Automatically begin structured learning
+        # Ensure structured learning progression starts
         self.start_learning_sequence()
 
     def load_cognition_level(self):
@@ -25,7 +25,7 @@ class FractalCognition:
         if os.path.exists("cognition_level.json"):
             with open("cognition_level.json", "r") as file:
                 return json.load(file).get("cognition_level", 1.0)
-        return 1.0
+        return 1.0  # Default cognition level
 
     def save_cognition_level(self):
         """Saves the current cognition level."""
@@ -37,7 +37,7 @@ class FractalCognition:
         if os.path.exists("memory.json"):
             with open("memory.json", "r") as file:
                 return json.load(file)
-        return {}
+        return {}  # Start with an empty memory dictionary if no prior learning
 
     def save_memory(self):
         """Saves AI knowledge persistently."""
@@ -56,49 +56,7 @@ class FractalCognition:
         }
         self.memory.update(core_knowledge)
         self.save_memory()
-        self.cognition_level += 5  # Start with some cognition points
-        self.save_cognition_level()
-
-    def start_learning_sequence(self):
-        """Controls FractiCody's structured learning development."""
-        print("🚀 Starting Structured Learning Progression...")
-        
-        if self.cognition_level < 20:
-            self.learn_language_basics()
-        
-        if self.cognition_level >= 20:
-            self.enable_internet_learning()
-
-        if self.cognition_level >= 50:
-            self.enable_intelligent_study_selection()
-
-    def learn_language_basics(self):
-        """Basic language acquisition step."""
-        print("🧠 Learning Language Basics...")
-        language_knowledge = {
-            "hello": "A greeting used when meeting someone.",
-            "how are you?": "A common phrase used to ask about well-being.",
-            "goodbye": "A phrase used when leaving."
-        }
-        self.memory.update(language_knowledge)
-        self.save_memory()
-        self.cognition_level += 10
-        self.save_cognition_level()
-
-    def enable_internet_learning(self):
-        """Grants access to search the internet for knowledge acquisition."""
-        print("🌐 Enabling Internet Research Mode...")
-        self.memory["internet_access"] = "FractiCody can now access online sources to expand knowledge."
-        self.save_memory()
-        self.cognition_level += 10
-        self.save_cognition_level()
-
-    def enable_intelligent_study_selection(self):
-        """Allows FractiCody to prioritize the most valuable knowledge areas to study."""
-        print("🧠 Activating Self-Directed Study Optimization...")
-        self.memory["study_optimization"] = "FractiCody now selects the most beneficial learning topics based on gaps in knowledge."
-        self.save_memory()
-        self.cognition_level += 10
+        self.cognition_level += 5  # Start with a baseline cognition level
         self.save_cognition_level()
 
     def activate(self):
@@ -110,9 +68,11 @@ class FractalCognition:
         """Processes user input and learns from interactions."""
         user_input = user_input.lower().strip()
 
+        # Retrieve known responses from memory
         if user_input in self.memory:
             return self.memory[user_input]
 
+        # If new input, store it and prepare to learn
         response = "I don't know yet. Teach me, and I'll remember."
         self.memory[user_input] = response
         self.save_memory()
