@@ -1,60 +1,31 @@
-import sys
-import os
 import time
 import json
-from flask import Flask, request, jsonify
+import os
 
-# Ensure Python detects the 'core' module properly
-sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+class FractiDecisionEngine:
+    """FractiCody's decision-making system, handling logic, reasoning, and adaptive decisions."""
 
-# Import core components
-try:
-    from core.fractal_cognition import FractalCognition
-    from core.memory_manager import MemoryManager
-    from core.fracti_fpu import FractiProcessingUnit
-except ImportError as e:
-    print(f"❌ Error importing core modules: {e}")
-    raise
-
-# Initialize Flask
-app = Flask(__name__)
-
-class FractiCodyEngine:
-    """Core engine for FractiCody AI"""
-    
     def __init__(self):
-        print("🚀 Initializing FractiCody Engine...")
-        self.fractal_cognition = FractalCognition()  # Bootstraps deep learning on init
-        self.memory = MemoryManager()
-        self.fpu = FractiProcessingUnit()
-        self.cognition_level = self.fractal_cognition.cognition_level
-        self.learning_active = True
+        print("✅ FractiDecisionEngine Initialized...")
+        self.decisions = self.load_decision_memory()
+        self.decision_level = self.load_decision_level()  # Persistent decision tracking
+        self.adaptive_learning = True
 
-    def start(self):
-        """Starts the AI engine"""
-        print("🔹 Activating Fractal Cognition...")
-        self.fractal_cognition.activate()
-        print(f"✅ FractiCody Booted at Cognition Level: {self.cognition_level}")
+        # Ensure smooth initialization timing
+        time.sleep(1)
 
-    def process_input(self, user_input):
-        """Processes user input using fractal cognition"""
-        return self.fractal_cognition.process_input(user_input)
+    def load_decision_level(self):
+        """Loads the last saved decision level (persistent decision-making memory)."""
+        if os.path.exists("decision_level.json"):
+            with open("decision_level.json", "r") as file:
+                return json.load(file).get("decision_level", 1.0)
+        return 1.0  # Default starting level
 
-@app.route('/command', methods=['POST'])
-def command():
-    """Processes AI commands through FractiCody's cognition."""
-    try:
-        user_input = request.json.get("command", "").strip()
-        if not user_input:
-            return jsonify({"error": "Invalid input. Command is required."}), 400
+    def save_decision_level(self):
+        """Saves the current decision level to prevent resets."""
+        with open("decision_level.json", "w") as file:
+            json.dump({"decision_level": self.decision_level}, file)
 
-        fracticody = FractiCodyEngine()
-        response = fracticody.process_input(user_input)
-        return jsonify({"response": response})
-
-    except Exception as e:
-        print(f"❌ Error processing command: {e}")
-        return jsonify({"error": "An error occurred processing your request."}), 500
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8181, debug=True)
+    def load_decision_memory(self):
+        """Loads stored decision-making data."""
+        if os.path.exists("dec
