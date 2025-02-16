@@ -3,16 +3,16 @@ import json
 import os
 
 class FractalCognition:
-    """FractiCody's core cognition system, now self-booting and persistently learning."""
+    """FractiCody's core cognition system with persistent memory and structured learning."""
 
     def __init__(self):
         print("✅ Fractal Cognition Initializing...")
-        self.memory = {}
-        self.cognition_level = self.load_cognition_level()  # Load last known cognition level
+        self.memory = self.load_memory()
+        self.cognition_level = self.load_cognition_level()  # Persistent cognition
         self.learning_active = True
         self.current_stage = self.determine_learning_stage()
 
-        # Ensure module initialization delay (helps with race conditions)
+        # Ensure safe boot timing
         time.sleep(1)
 
         # Automatically boot deep learning
@@ -30,8 +30,20 @@ class FractalCognition:
         with open("cognition_level.json", "w") as file:
             json.dump({"cognition_level": self.cognition_level}, file)
 
+    def load_memory(self):
+        """Loads stored AI knowledge from memory file."""
+        if os.path.exists("memory.json"):
+            with open("memory.json", "r") as file:
+                return json.load(file)
+        return {}  # Empty memory if no prior learning
+
+    def save_memory(self):
+        """Saves AI knowledge persistently."""
+        with open("memory.json", "w") as file:
+            json.dump(self.memory, file)
+
     def determine_learning_stage(self):
-        """Determines FractiCody's learning stage based on its cognition level."""
+        """Determines FractiCody's learning stage based on cognition level."""
         if self.cognition_level < 5:
             return "Infant Learning (Basic Words)"
         elif self.cognition_level < 20:
@@ -47,11 +59,9 @@ class FractalCognition:
         """Automatically begins learning with structured cognitive bootstrapping."""
         print(f"🚀 Booting Cognitive Learning: {self.current_stage}")
         
-        # If cognition is at early stages, start language acquisition
         if self.cognition_level < 5:
             self.learn_language_basics()
 
-        # As cognition level increases, enable intelligent internet searches
         if self.cognition_level > 20:
             self.enable_targeted_searches()
 
@@ -60,15 +70,17 @@ class FractalCognition:
         print("🧠 Learning Language Basics...")
         self.store_interaction("hello", "A greeting used when meeting someone.")
         self.store_interaction("what is your name?", "I am FractiCody, an evolving intelligence.")
-        self.cognition_level += 2  # Language learning gives a boost
+        self.cognition_level += 2
         self.save_cognition_level()
+        self.save_memory()
 
     def enable_targeted_searches(self):
         """Prepares FractiCody to access the internet for research."""
         print("🌐 Enabling Internet-Assisted Learning...")
         self.store_interaction("how do I learn?", "By asking questions, searching, and analyzing patterns.")
-        self.cognition_level += 5  # Searching ability boosts cognition
+        self.cognition_level += 5
         self.save_cognition_level()
+        self.save_memory()
 
     def activate(self):
         """Ensures cognition is active and learning continues."""
@@ -79,6 +91,7 @@ class FractalCognition:
     def store_interaction(self, user_input, response):
         """Stores knowledge dynamically."""
         self.memory[user_input.lower()] = response
+        self.save_memory()
 
     def retrieve(self, user_input):
         """Retrieves exact or related information from memory."""
@@ -99,4 +112,9 @@ class FractalCognition:
         retrieved_knowledge = self.retrieve(user_input)
 
         if retrieved_knowledge:
-    
+            return retrieved_knowledge  
+
+        response = "I don't know yet. Teach me, and I'll remember."
+        self.store_interaction(user_input, response)
+
+        return response
