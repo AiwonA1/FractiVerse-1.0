@@ -3,11 +3,14 @@ import sys
 import os
 import json
 
-class FractiCognition:
+class FractalCognition:
     def __init__(self):
         self.memory = {}  # Stores learned facts
         self.cognition_level = 1.0  # Tracks cognitive expansion
         self.learning_active = True  # Enables continuous learning
+
+        # Ensure module initialization delay (helps with race conditions)
+        time.sleep(1)  
 
     def store_interaction(self, user_input, response):
         """Stores knowledge dynamically."""
