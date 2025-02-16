@@ -35,8 +35,8 @@ class FractiCodyEngine:
 
     def process_input(self, user_input):
         """Processes user input using fractal cognition"""
-        response = self.cognition.process_input(user_input)
-        print(f"🔄 Updated Cognition Level: {self.cognition.cognition_level}")
+        response = self.cognition.process_input(user_input)  # ✅ Directly return response
+        print(f"🔄 Processed Input: {user_input} | Response: {response}")  # ✅ Debugging
         return response
 
     def make_decision(self, context, options):
@@ -57,86 +57,7 @@ def command():
         # ✅ Ensure correct response retrieval
         response = fracticody.process_input(user_input)
 
-        return jsonify({"response": response})  # ✅ Return response correctly
-
-    except Exception as e:
-        print(f"❌ Error processing command: {e}")
-        return jsonify({"error": "An error occurred processing your request."}), 500
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8181, debug=True)
-        self.decision_engine = FractiDecisionEngine()
-        self.memory = MemoryManager()
-        self.fpu = FractiProcessingUnit()
-        self.cognition_level = self.cognition.load_cognition_level()
-        self.learning_active = True
-
-        print(f"✅ FractiCody Booted at Cognition Level: {self.cognition_level}")
-
-    def start(self):
-        """Starts the AI engine"""
-        print("🔹 Activating Fractal Cognition...")
-        self.cognition.activate()
-        print(f"✅ FractiCody Running at Cognition Level: {self.cognition_level}")
-
-    def process_input(self, user_input):
-        """Processes user input using fractal cognition"""
-        response = self.cognition.process_input(user_input)
-        print(f"🔄 Updated Cognition Level: {self.cognition.cognition_level}")
-        return response
-
-    def make_decision(self, context, options):
-        """Uses the decision engine to make logical choices."""
-        return self.decision_engine.process_decision(context, options)
-
-
-# Global instance of FractiCody Engine (Persists Across API Calls)
-fracticody = FractiCodyEngine()
-
-@app.route('/command', methods=['POST'])
-def command():
-    try:
-        user_input = request.json.get("command", "").strip()
-        if not user_input:
-            return jsonify({"error": "Invalid input. Command is required."}), 400
-
-        response = fracticody.process_input(user_input)
-        return jsonify({"response": response})
-
-    except Exception as e:
-        print(f"❌ Error processing command: {e}")
-        return jsonify({"error": "An error occurred processing your request."}), 500
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8181, debug=True)
-        self.fpu = FractiProcessingUnit()
-        self.cognition_level = self.cognition.cognition_level
-        self.learning_active = True
-
-    def start(self):
-        """Starts the AI engine"""
-        print("🔹 Activating Fractal Cognition...")
-        self.cognition.activate()
-        print(f"✅ FractiCody Booted at Cognition Level: {self.cognition_level}")
-
-    def process_input(self, user_input):
-        """Processes user input using fractal cognition"""
-        return self.cognition.process_input(user_input)
-
-    def make_decision(self, context, options):
-        """Uses the decision engine to make logical choices."""
-        return self.decision_engine.process_decision(context, options)
-
-@app.route('/command', methods=['POST'])
-def command():
-    try:
-        user_input = request.json.get("command", "").strip()
-        if not user_input:
-            return jsonify({"error": "Invalid input. Command is required."}), 400
-
-        fracticody = FractiCodyEngine()
-        response = fracticody.process_input(user_input)
-        return jsonify({"response": response})
+        return jsonify({"response": response})  # ✅ Return the correct response
 
     except Exception as e:
         print(f"❌ Error processing command: {e}")
