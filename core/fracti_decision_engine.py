@@ -1,31 +1,60 @@
-"""
-🎯 FractiCody AI Decision Processing System - Fully Executable
-Uses PEFF Harmonization and AI Blockchain Memory.
-"""
-import numpy as np
-from fracti_chain import FractiChain
+import sys
+import os
+import time
+import json
+from flask import Flask, request, jsonify
 
-class FractiCodyDecisionEngine:
-    def __init__(self, fractichain):
-        self.fractichain = fractichain
-        self.decision_memory = []
+# Ensure Python detects the 'core' module properly
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
-    def analyze_past_decisions(self, unipixel_id):
-        past_state = self.fractichain.retrieve_unipixel_state(unipixel_id)
-        if past_state is None:
-            return "⚠️ No Past AI Knowledge - Decision Based on Initial PEFF Ethics"
-        return f"📜 AI PEFF Analysis of {unipixel_id}: {past_state}"
+# Import core components
+try:
+    from core.fractal_cognition import FractalCognition
+    from core.memory_manager import MemoryManager
+    from core.fracti_fpu import FractiProcessingUnit
+except ImportError as e:
+    print(f"❌ Error importing core modules: {e}")
+    raise
 
-    def make_decision(self, unipixel, input_scenario):
-        past_knowledge = self.analyze_past_decisions(unipixel.id)
-        entropy_factor = np.random.uniform(0.6, 1.4)  
+# Initialize Flask
+app = Flask(__name__)
 
-        if entropy_factor > 1.2:
-            decision = f"🧠 PEFF Decision: Deep Recursive Expansion for '{input_scenario}'"
-        elif entropy_factor < 0.8:
-            decision = f"⚡ PEFF Decision: Direct Execution with Ethical Safeguards for '{input_scenario}'"
-        else:
-            decision = f"🔄 PEFF Decision: Harmonized Hybrid Approach for '{input_scenario}'"
+class FractiCodyEngine:
+    """Core engine for FractiCody AI"""
+    
+    def __init__(self):
+        print("🚀 Initializing FractiCody Engine...")
+        self.fractal_cognition = FractalCognition()  # Bootstraps deep learning on init
+        self.memory = MemoryManager()
+        self.fpu = FractiProcessingUnit()
+        self.cognition_level = self.fractal_cognition.cognition_level
+        self.learning_active = True
 
-        self.decision_memory.append({"unipixel": unipixel.id, "scenario": input_scenario, "decision": decision})
-        return decision
+    def start(self):
+        """Starts the AI engine"""
+        print("🔹 Activating Fractal Cognition...")
+        self.fractal_cognition.activate()
+        print(f"✅ FractiCody Booted at Cognition Level: {self.cognition_level}")
+
+    def process_input(self, user_input):
+        """Processes user input using fractal cognition"""
+        return self.fractal_cognition.process_input(user_input)
+
+@app.route('/command', methods=['POST'])
+def command():
+    """Processes AI commands through FractiCody's cognition."""
+    try:
+        user_input = request.json.get("command", "").strip()
+        if not user_input:
+            return jsonify({"error": "Invalid input. Command is required."}), 400
+
+        fracticody = FractiCodyEngine()
+        response = fracticody.process_input(user_input)
+        return jsonify({"response": response})
+
+    except Exception as e:
+        print(f"❌ Error processing command: {e}")
+        return jsonify({"error": "An error occurred processing your request."}), 500
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8181, debug=True)
