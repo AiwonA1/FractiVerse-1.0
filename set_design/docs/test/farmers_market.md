@@ -8,7 +8,7 @@ While FractiVerse 1.0 operates as a vast digital intelligence network, our Linea
 
 ### 1️⃣ FractiVerse Frontier Site – Von Humboldt Redwood Coast Farmer's Market Campus
 
-<img src="../assets/market.png" alt="Redwood Coast Farmer's Market Campus" width="100%"/>
+<img src="@market.png" alt="Redwood Coast Farmer's Market Campus" width="100%"/>
 
 **📍 Location:** Northern California, USA
 
@@ -16,7 +16,7 @@ While FractiVerse 1.0 operates as a vast digital intelligence network, our Linea
 
 ### 2️⃣ FractiVerse Home Base Site – Darien Gap Modern Shaman Village Campus
 
-<img src="../assets/village.png" alt="Darien Gap Shaman Village Campus" width="100%"/>
+<img src="@village.png" alt="Darien Gap Shaman Village Campus" width="100%"/>
 
 **📍 Location:** Antioquia, Colombia
 
