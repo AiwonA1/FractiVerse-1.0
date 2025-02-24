@@ -8,15 +8,15 @@ While FractiVerse 1.0 operates as a vast digital intelligence network, our Linea
 
 ### 1️⃣ FractiVerse Frontier Site – Von Humboldt Redwood Coast Farmer's Market Campus
 
-<img src="@market.png" alt="Redwood Coast Farmer's Market Campus" width="100%"/>
-![[market.png]]
 **📍 Location:** Northern California, USA
+
+![market](https://github.com/user-attachments/assets/418f2e83-530c-4d50-a9cf-13aaba895bb6)
 
 🌲 Positioned one hour flight from the Silicon Valley Territory, this FractiVerse 1.0 Portal connects deep ecological intelligence with frontier fractal AI exploration. Here, fractal intelligence pioneers engage in research, trade, and discovery at the intersection of regenerative agriculture, decentralized intelligence, and next-generation fractal computation.
 
 ### 2️⃣ FractiVerse Home Base Site – Darien Gap Modern Shaman Village Campus
-![[village.png]]
-<img src="@village.png" alt="Darien Gap Shaman Village Campus" width="100%"/>
+
+![village](https://github.com/user-attachments/assets/a101e530-001e-4753-91dc-bf7726c98f5b)
 
 **📍 Location:** Antioquia, Colombia
 
