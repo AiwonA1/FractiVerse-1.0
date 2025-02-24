@@ -16,7 +16,7 @@ The AIVFIAR system represents a revolutionary approach to interactive storytelli
 
 ```mermaid
 graph TD
-    A[Player Input] --> B[Quantum State Engine]
+    A[Player Input] --> B[Quantum State Engines]
     B --> C[AI Verification Layer]
     C --> D[Reality Generation]
     D --> E[Holographic Output]
