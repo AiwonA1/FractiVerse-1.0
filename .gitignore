@@ -1,9 +1,10 @@
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
+*.class
 *.so
 .Python
+env/
 build/
 develop-eggs/
 dist/
@@ -19,49 +20,9 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-
-# Virtual Environment
+.env
+.venv
 venv/
 ENV/
-env/
-
-# IDE
 .idea/
 .vscode/
-*.swp
-*.swo
-.project
-.pydevproject
-
-# Testing
-.coverage
-htmlcov/
-.tox/
-.pytest_cache/
-coverage.xml
-*.cover
-
-# Documentation
-docs/_build/
-docs/api/
-
-# Misc
-.DS_Store
-.env
-.env.local
-.env.*.local
-
-# Ignore system files
-Thumbs.db
-
-# Ignore logs and temporary files
-logs/
-*.log
-*.tmp
-
-# Ignore Jupyter Notebook checkpoints
-.ipynb_checkpoints/
-
-# Ignore compiled binaries
-*.dll
-*.dylib
