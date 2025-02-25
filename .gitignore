@@ -1,15 +1,57 @@
-# Ignore Python bytecode files
+# Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Ignore virtual environments
+# Virtual Environment
 venv/
-.env/
+ENV/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.project
+.pydevproject
+
+# Testing
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+coverage.xml
+*.cover
+
+# Documentation
+docs/_build/
+docs/api/
+
+# Misc
+.DS_Store
+.env
+.env.local
+.env.*.local
 
 # Ignore system files
-.DS_Store
 Thumbs.db
 
 # Ignore logs and temporary files
@@ -20,11 +62,6 @@ logs/
 # Ignore Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
-# Ignore VS Code and PyCharm settings
-.vscode/
-.idea/
-
 # Ignore compiled binaries
-*.so
 *.dll
 *.dylib
