@@ -19,30 +19,76 @@ def test_parameters():
 
 def test_mandelbrot_set(test_parameters):
     """Test Mandelbrot set calculation."""
-    # TODO: Implement test
-    pass
+    # Test known points in the Mandelbrot set
+    points = np.array([
+        [0.0, 0.0],  # Center point (known to be in set)
+        [0.25, 0.0],  # Real point in set
+        [2.0, 2.0],   # Point definitely outside set
+    ])
+    
+    results = mandelbrot_set(points, test_parameters["max_iter"], test_parameters["escape_radius"])
+    
+    assert results[0] == test_parameters["max_iter"]  # Center point should be in set
+    assert results[1] == test_parameters["max_iter"]  # 0.25 should be in set
+    assert results[2] < test_parameters["max_iter"]   # Outside point should escape
 
 def test_julia_set(test_parameters):
     """Test Julia set calculation."""
-    # TODO: Implement test
-    pass
+    c = -0.4 + 0.6j  # Common Julia set parameter
+    points = np.array([
+        [0.0, 0.0],  # Origin
+        [1.0, 0.0],  # Point likely outside set
+        [0.5, 0.5]   # Test point
+    ])
+    
+    results = julia_set(points, c, test_parameters["max_iter"], test_parameters["escape_radius"])
+    
+    assert isinstance(results, np.ndarray)
+    assert results.shape == (3,)
+    assert all(0 <= x <= test_parameters["max_iter"] for x in results)
 
 def test_fractal_dimension():
     """Test fractal dimension calculation."""
-    # TODO: Implement test
-    pass
+    # Create a simple test fractal (Koch curve-like)
+    points = np.array([
+        [0, 0], [1, 1], [2, 0], [3, 1], [4, 0]
+    ])
+    
+    dimension = fractal_dimension(points)
+    
+    # Koch curve has dimension ~1.26
+    assert 1.0 < dimension < 1.5
+    assert isinstance(dimension, float)
 
 def test_function_iteration():
     """Test function iteration for fractal generation."""
-    # TODO: Implement test
-    pass
+    def test_func(z, c):
+        return z**2 + c
+    
+    z0 = 0.0
+    c = 0.25
+    iterations = 10
+    
+    result = iterate_function(test_func, z0, c, iterations)
+    
+    assert len(result) == iterations + 1  # Include initial point
+    assert result[0] == z0
+    assert isinstance(result, list)
+    assert all(isinstance(x, (complex, float)) for x in result)
 
 @pytest.mark.parametrize("input_value,expected", [
     (0.0, 0.0),
     (1.0, 1.0),
     (float('inf'), float('inf'))
 ])
-def test_edge_cases(input_value, expected):
+def test_edge_cases(input_value, expected, test_parameters):
     """Test edge cases for fractal calculations."""
-    # TODO: Implement test
-    pass 
+    point = np.array([[input_value, 0.0]])
+    
+    # Test Mandelbrot calculation with edge cases
+    result = mandelbrot_set(point, test_parameters["max_iter"], test_parameters["escape_radius"])
+    
+    if np.isinf(expected):
+        assert result[0] < test_parameters["max_iter"]
+    else:
+        assert isinstance(result[0], (np.int64, np.int32)) 
