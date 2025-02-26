@@ -239,8 +239,9 @@ async def startup():
         print("\n🚀 Starting FractiVerse 1.0")
         logger.info("Starting FractiVerse 1.0", environment=ENV, testing=IS_TESTING)
         
-        # Initialize orchestrator
+        # Initialize and start orchestrator
         orchestrator = FractiVerseOrchestrator()
+        await orchestrator.start()
         
         # Start metrics server
         if config["monitoring"]["prometheus"]:

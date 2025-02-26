@@ -42,11 +42,24 @@ class FractiVerseOrchestrator:
             start_time = datetime.now()
             
             # Start components in order
-            await self._start_core_components()
+            for name, component in self.components.items():
+                print(f"Starting {name} component...")
+                if hasattr(component, 'start'):
+                    if asyncio.iscoroutinefunction(component.start):
+                        await component.start()
+                    else:
+                        component.start()
+                else:
+                    print(f"Warning: {name} component has no start method")
             
             # Log startup metrics
             startup_duration = (datetime.now() - start_time).total_seconds()
             print(f"Startup duration: {startup_duration}s")
+            
+            # Verify all components are active
+            for name, component in self.components.items():
+                if hasattr(component, 'is_active') and not component.is_active():
+                    raise Exception(f"{name} component failed to start")
             
             print("FractiVerse system started successfully")
             return True
@@ -89,6 +102,26 @@ class FractiVerseOrchestrator:
         print(f"Processing input {command_id}")
         
         try:
+            # Input validation
+            if not isinstance(input_data, dict):
+                raise ValueError("Input must be a dictionary")
+            
+            if "coordinates" in input_data:
+                if not isinstance(input_data["coordinates"], list):
+                    raise ValueError("coordinates must be a list")
+                
+                for coord in input_data["coordinates"]:
+                    if not isinstance(coord, dict):
+                        raise ValueError("Each coordinate must be a dictionary")
+                    if "position" not in coord:
+                        raise ValueError("Each coordinate must have a position")
+                    if not isinstance(coord["position"], list) or len(coord["position"]) != 3:
+                        raise ValueError("Position must be a list of 3 coordinates")
+                    if not all(isinstance(x, (int, float)) for x in coord["position"]):
+                        raise ValueError("Position coordinates must be numbers")
+                    if "value" in coord and not isinstance(coord["value"], (int, float)):
+                        raise ValueError("Coordinate value must be a number")
+            
             # Process through cognitive engine
             cognitive_result = self.components["cognition"].process_input(input_data)
             if not cognitive_result:
@@ -118,6 +151,13 @@ class FractiVerseOrchestrator:
                 "peff_state": peff_result
             }
             
+        except ValueError as e:
+            print(f"Input validation error {command_id}: {e}")
+            return {
+                "status": "error",
+                "command_id": command_id,
+                "error": str(e)
+            }
         except Exception as e:
             print(f"Error processing input {command_id}: {e}")
             return {
@@ -130,10 +170,20 @@ class FractiVerseOrchestrator:
         """Stop all FractiVerse components."""
         try:
             # Stop in reverse order
-            self.components["cognition"].stop()
-            self.components["peff"].stop()
-            self.components["reality"].stop()
-            self.components["unipixel"].stop()
+            for name, component in reversed(list(self.components.items())):
+                print(f"Stopping {name} component...")
+                if hasattr(component, 'stop'):
+                    if asyncio.iscoroutinefunction(component.stop):
+                        await component.stop()
+                    else:
+                        component.stop()
+                else:
+                    print(f"Warning: {name} component has no stop method")
+            
+            # Verify all components are inactive
+            for name, component in self.components.items():
+                if hasattr(component, 'is_active') and component.is_active():
+                    print(f"Warning: {name} component failed to stop")
             
             print("FractiVerse system stopped successfully")
             

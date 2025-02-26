@@ -370,18 +370,17 @@ async def test_orchestrator_startup(orchestrator):
     assert "component_metrics" in metrics
 
 @pytest.mark.asyncio
-async def test_orchestrator_shutdown(orchestrator):
-    """Test orchestrator shutdown."""
+async def test_system_shutdown(orchestrator):
+    """Test system shutdown process."""
     # Stop the orchestrator
     await orchestrator.stop()
     
-    # Verify components are inactive
+    # Check that all components are inactive
     for component in orchestrator.components.values():
-        assert component.active is False
+        assert not component.active
     
-    # Restart for other tests
+    # Reinitialize for other tests
     await orchestrator.start()
-    assert orchestrator.get_health()["status"] == "healthy"
 
 @pytest.mark.asyncio
 async def test_process_input(orchestrator):

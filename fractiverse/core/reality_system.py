@@ -10,6 +10,34 @@ class RealitySystem:
         self.state = {}
         self.reality_matrix = np.zeros((64, 64, 64), dtype=np.float32)
         
+    def get_metrics(self) -> Dict:
+        """Get system metrics.
+        
+        Returns:
+            Dict: Dictionary containing system metrics
+        """
+        matrix_sum = float(np.sum(self.reality_matrix))
+        matrix_mean = float(np.mean(self.reality_matrix))
+        matrix_std = float(np.std(self.reality_matrix))
+        non_zero_count = int(np.count_nonzero(self.reality_matrix))
+        
+        return {
+            'active': self.active,
+            'matrix_sum': matrix_sum,
+            'matrix_mean': matrix_mean,
+            'matrix_std': matrix_std,
+            'active_points': non_zero_count,
+            'state': self.state
+        }
+        
+    def status(self) -> str:
+        """Get system status.
+        
+        Returns:
+            str: System status ('healthy' or 'unhealthy')
+        """
+        return 'healthy' if self.active else 'unhealthy'
+        
     def start(self) -> bool:
         """Start the reality system.
         

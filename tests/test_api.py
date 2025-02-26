@@ -14,7 +14,8 @@ async def orchestrator():
     """Create a real orchestrator instance for testing"""
     orchestrator = FractiVerseOrchestrator()
     await orchestrator.start()
-    return orchestrator
+    yield orchestrator
+    await orchestrator.stop()
 
 @pytest.fixture
 def mock_orchestrator(orchestrator):
