@@ -18,15 +18,20 @@ class LearningSystem:
         self.learning_rate = 0.1
         self.memory = AdaptiveMemory()
         self.pattern_recognizer = PatternRecognition()
+        self._initialized = False
         
     async def initialize(self):
         """Initialize the learning system."""
-        self.memory.initialize()
-        await self.pattern_recognizer.initialize()
+        if not self._initialized:
+            self.memory.initialize()
+            await self.pattern_recognizer.initialize()
+            self._initialized = True
         
     async def shutdown(self):
         """Shutdown the learning system."""
-        await self.pattern_recognizer.shutdown()
+        if self._initialized:
+            await self.pattern_recognizer.shutdown()
+            self._initialized = False
         
     async def learn_pattern(self, pattern):
         """Learn a new pattern.
@@ -37,8 +42,11 @@ class LearningSystem:
         Returns:
             dict: Learning result with success and confidence
         """
+        if not self._initialized:
+            await self.initialize()
+            
         self.patterns.append(pattern)
-        confidence = self.pattern_recognizer.compute_confidence(pattern)
+        confidence = await self.pattern_recognizer.compute_confidence(pattern)
         self.memory.store_pattern(pattern)
         
         # Adjust learning rate based on confidence
@@ -56,6 +64,8 @@ class LearningSystem:
         Returns:
             list: List of learned patterns
         """
+        if not self._initialized:
+            await self.initialize()
         return self.patterns
         
     async def get_memory_capacity(self):
@@ -64,6 +74,8 @@ class LearningSystem:
         Returns:
             int: Memory capacity
         """
+        if not self._initialized:
+            await self.initialize()
         return self.memory.capacity
         
     async def get_memory_usage(self):
@@ -72,6 +84,8 @@ class LearningSystem:
         Returns:
             float: Memory usage ratio (0-1)
         """
+        if not self._initialized:
+            await self.initialize()
         return len(self.patterns) / self.memory.capacity
         
     async def save_state(self):
@@ -80,6 +94,9 @@ class LearningSystem:
         Returns:
             str: State ID
         """
+        if not self._initialized:
+            await self.initialize()
+            
         state_id = datetime.now().strftime("%Y%m%d_%H%M%S")
         state = {
             "patterns": [p.tolist() for p in self.patterns],
@@ -101,6 +118,9 @@ class LearningSystem:
         Returns:
             bool: Success status
         """
+        if not self._initialized:
+            await self.initialize()
+            
         if self.test_mode:
             return True
             
@@ -116,6 +136,9 @@ class LearningSystem:
             
     async def clear(self):
         """Clear all learned patterns."""
+        if not self._initialized:
+            await self.initialize()
+            
         self.patterns = []
         self.learning_rate = 0.1
         self.memory.clear()
@@ -129,7 +152,10 @@ class LearningSystem:
         Returns:
             dict: Recognition result
         """
-        confidence = self.pattern_recognizer.compute_confidence(pattern)
+        if not self._initialized:
+            await self.initialize()
+            
+        confidence = await self.pattern_recognizer.compute_confidence(pattern)
         recognized = confidence > 0.6
         
         return {
@@ -143,16 +169,17 @@ class PatternRecognition:
     def __init__(self):
         """Initialize pattern recognition system."""
         self.threshold = 0.6
+        self._initialized = False
         
     async def initialize(self):
         """Initialize the recognition system."""
-        pass
+        self._initialized = True
         
     async def shutdown(self):
         """Shutdown the recognition system."""
-        pass
+        self._initialized = False
         
-    def compute_confidence(self, pattern):
+    async def compute_confidence(self, pattern):
         """Compute confidence score for pattern recognition.
         
         Args:
@@ -173,10 +200,11 @@ class AdaptiveMemory:
         """Initialize adaptive memory system."""
         self.capacity = 1000
         self.patterns = []
+        self._initialized = False
         
     def initialize(self):
         """Initialize the memory system."""
-        pass
+        self._initialized = True
         
     def store_pattern(self, pattern):
         """Store a pattern in memory.

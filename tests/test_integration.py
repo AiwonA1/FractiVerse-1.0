@@ -124,7 +124,8 @@ def test_error_handling(cognitive_engine, reality_system, peff_system, unipixel_
     
     # Process through cognitive engine
     cognitive_result = cognitive_engine.process_input(test_input)
-    assert cognitive_result is None
+    assert cognitive_result["status"] == "error"
+    assert "invalid input format" in cognitive_result["message"].lower()
     
     # Test invalid coordinates
     test_input = {
@@ -138,24 +139,53 @@ def test_error_handling(cognitive_engine, reality_system, peff_system, unipixel_
     
     # Process through cognitive engine
     cognitive_result = cognitive_engine.process_input(test_input)
-    assert cognitive_result is not None
+    assert cognitive_result["status"] == "error"
+    assert "invalid coordinates" in cognitive_result["message"].lower()
     
-    # Process through reality system
-    reality_result = reality_system.process(cognitive_result)
-    assert reality_result is not None
+    # Test boundary conditions
+    test_input = {
+        "coordinates": [
+            {
+                "position": [float('inf'), 0, 0],  # Infinite coordinate
+                "value": 0.5
+            }
+        ]
+    }
     
-    # Process through PEFF system
-    peff_result = peff_system.process(reality_result)
-    assert peff_result is not None
+    # Process through cognitive engine
+    cognitive_result = cognitive_engine.process_input(test_input)
+    assert cognitive_result["status"] == "error"
+    assert "invalid coordinate value" in cognitive_result["message"].lower()
     
-    # Process through unipixel system
-    for coord in peff_result["coordinates"]:
-        x, y, z = coord["position"]
-        value = coord["value"]
-        # Should fail for invalid coordinates
-        if x < 0 or y < 0 or z < 0:
-            assert not unipixel_core.process_point(x, y, z, value)
-            assert unipixel_core.get_point(x, y, z) is None
+    # Test missing fields
+    test_input = {
+        "coordinates": [
+            {
+                "position": [0, 0, 0]
+                # Missing value field
+            }
+        ]
+    }
+    
+    # Process through cognitive engine
+    cognitive_result = cognitive_engine.process_input(test_input)
+    assert cognitive_result["status"] == "error"
+    assert "missing required field" in cognitive_result["message"].lower()
+    
+    # Test type errors
+    test_input = {
+        "coordinates": [
+            {
+                "position": ["0", "0", "0"],  # String coordinates instead of numbers
+                "value": "0.5"  # String value instead of number
+            }
+        ]
+    }
+    
+    # Process through cognitive engine
+    cognitive_result = cognitive_engine.process_input(test_input)
+    assert cognitive_result["status"] == "error"
+    assert "invalid data type" in cognitive_result["message"].lower()
 
 @pytest.fixture
 def vector():
@@ -194,8 +224,25 @@ def test_chain_integration(chain):
 
 def test_network_integration(network, pixel):
     """Test FractiNet distribution"""
+    # Add a test node to the network
+    test_node = {"name": "Test_Node", "type": "test"}
+    network.add_node(test_node)
+    
+    # Add pixel to the network
     network = network | pixel
+    
+    # Verify both node and pixel are in network
     assert "Test_Node" in network.network
+    assert pixel.id in network.network
+    
+    # Test network operations
+    network.process_node(test_node["name"])
+    assert network.is_active(test_node["name"])
+    
+    # Test pixel integration
+    pixel_state = network.get_node_state(pixel.id)
+    assert pixel_state is not None
+    assert "position" in pixel_state
 
 if __name__ == '__main__':
     pytest.main()

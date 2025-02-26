@@ -88,8 +88,20 @@ def test_logging_setup(test_logger, safe_to_fail):
     result = safe_to_fail(_test)
     assert result is True
 
+def safe_to_fail(func):
+    """Decorator to safely run test functions that may fail due to filesystem operations."""
+    def _safe_to_fail(*args, **kwargs):
+        try:
+            result = func(*args, **kwargs)
+            return result
+        except Exception as e:
+            print(f"Test failed gracefully: {e}")
+            return False
+    return _safe_to_fail
+
 def test_metric_logging(safe_to_fail):
     """Test metric logging functionality."""
+    @safe_to_fail
     def _test():
         log_metric('test_metric', 42.0)
         metric_files = list(METRICS_DIR.glob('*.json'))
@@ -107,8 +119,8 @@ def test_metric_logging(safe_to_fail):
         })
         
         return True
-        
-    result = safe_to_fail(_test)
+    
+    result = _test()
     assert result is True
 
 def test_visualization_saving(safe_to_fail):

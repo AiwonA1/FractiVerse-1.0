@@ -12,17 +12,29 @@ async def learning_system():
     """Provide a test instance of the learning system."""
     system = LearningSystem(test_mode=True)
     await system.initialize()
-    yield system
-    await system.shutdown()
+    try:
+        yield system
+    finally:
+        await system.shutdown()
 
 @pytest.fixture
 def test_patterns():
     """Generate test patterns for learning."""
-    return {
+    # Use fixed seed for reproducibility
+    np.random.seed(42)
+    patterns = {
         "simple": np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]]),  # Cross pattern
-        "complex": np.random.choice([0, 1], size=(5, 5), p=[0.7, 0.3]),  # Random sparse pattern
-        "random": np.random.rand(3, 3)  # Continuous random values
+        "complex": np.array([[0, 1, 0, 0, 0],
+                           [1, 0, 0, 1, 1],
+                           [0, 0, 0, 0, 0],
+                           [0, 0, 0, 1, 1],
+                           [0, 1, 0, 1, 0]]),  # Fixed complex pattern
+        "random": np.array([[0.76454474, 0.60866928, 0.64104972],
+                          [0.44495974, 0.85671135, 0.34084511],
+                          [0.8860017, 0.99728777, 0.90641703]])  # Fixed random pattern
     }
+    np.random.seed()  # Reset seed
+    return patterns
 
 @pytest.mark.asyncio
 async def test_pattern_learning(learning_system, test_patterns):

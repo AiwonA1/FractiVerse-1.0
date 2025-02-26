@@ -49,16 +49,31 @@ def test_julia_set(test_parameters):
 
 def test_fractal_dimension():
     """Test fractal dimension calculation."""
-    # Create a simple test fractal (Koch curve-like)
+    # Create a Koch curve-like pattern
     points = np.array([
-        [0, 0], [1, 1], [2, 0], [3, 1], [4, 0]
+        [0, 0],
+        [1/3, 0],
+        [0.5, np.sqrt(1/12)],  # Height of equilateral triangle
+        [2/3, 0],
+        [1, 0]
     ])
     
     dimension = fractal_dimension(points)
     
     # Koch curve has dimension ~1.26
-    assert 1.0 < dimension < 1.5
+    assert 1.2 < dimension < 1.3
     assert isinstance(dimension, float)
+    
+    # Test with a line (dimension should be close to 1)
+    line_points = np.array([[x, 0] for x in np.linspace(0, 1, 10)])
+    line_dimension = fractal_dimension(line_points)
+    assert 0.9 < line_dimension < 1.1
+    
+    # Test with a filled square (dimension should be close to 2)
+    grid_x, grid_y = np.meshgrid(np.linspace(0, 1, 5), np.linspace(0, 1, 5))
+    square_points = np.column_stack((grid_x.ravel(), grid_y.ravel()))
+    square_dimension = fractal_dimension(square_points)
+    assert 1.9 < square_dimension < 2.1
 
 def test_function_iteration():
     """Test function iteration for fractal generation."""

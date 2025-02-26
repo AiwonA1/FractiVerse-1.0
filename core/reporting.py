@@ -7,9 +7,25 @@ import shutil
 from pathlib import Path
 from datetime import datetime, timezone
 import structlog
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 logger = structlog.get_logger("fractiverse_reporting")
+
+def _get_module_structure() -> Dict[str, List[str]]:
+    """Get the module structure for test organization.
+    
+    Returns:
+        Dict[str, List[str]]: Module categories and their test files
+    """
+    return {
+        "Core": ["test_fractiverse.py", "test_api.py"],
+        "Mathematics": ["test_math/test_fractal_math.py"],
+        "Cognitive": ["test_cognitive/test_learning.py"],
+        "Visualization": ["test_visualization/test_renderers.py"],
+        "Statistics": ["test_statistics/test_analysis.py"],
+        "Blockchain": ["test_fractichain/test_blockchain.py"],
+        "Unipixel": ["test_unipixel/test_core.py"]
+    }
 
 def generate_html_report(test_output_dir: Path, test_results: Dict[str, Any], run_id: str):
     """Generate a comprehensive HTML test report with interactive features"""
@@ -17,7 +33,7 @@ def generate_html_report(test_output_dir: Path, test_results: Dict[str, Any], ru
         report_dir = test_output_dir / "report"
         report_dir.mkdir(exist_ok=True)
         
-        # Copy visualizations to report directory
+        # Copy visualizations and assets
         viz_report_dir = report_dir / "visualizations"
         viz_report_dir.mkdir(exist_ok=True)
         
@@ -26,6 +42,9 @@ def generate_html_report(test_output_dir: Path, test_results: Dict[str, Any], ru
             shutil.copy2(viz_file, viz_report_dir / viz_file.name)
         
         # Calculate test statistics
+        module_structure = _get_module_structure()
+        module_results = _organize_results_by_module(test_results, module_structure)
+        
         total_tests = sum(sum(results.values()) for results in test_results.values())
         total_passed = sum(results["passed"] for results in test_results.values())
         total_failed = sum(results["failed"] for results in test_results.values())
@@ -43,6 +62,7 @@ def generate_html_report(test_output_dir: Path, test_results: Dict[str, Any], ru
         html_content = _generate_html_content(
             run_id=run_id,
             test_results=test_results,
+            module_results=module_results,
             total_tests=total_tests,
             total_passed=total_passed,
             total_failed=total_failed,
@@ -68,10 +88,138 @@ def generate_html_report(test_output_dir: Path, test_results: Dict[str, Any], ru
         print(f"\n❌ Failed to generate HTML report: {str(e)}")
         logger.error("Failed to generate HTML report", error=str(e))
 
-def _generate_html_content(run_id: str, test_results: Dict[str, Any], total_tests: int,
-                         total_passed: int, total_failed: int, total_skipped: int,
+def _organize_results_by_module(test_results: Dict[str, Any], 
+                              module_structure: Dict[str, List[str]]) -> Dict[str, Dict[str, Any]]:
+    """Organize test results by module category.
+    
+    Args:
+        test_results: Raw test results
+        module_structure: Module category structure
+        
+    Returns:
+        Dict[str, Dict[str, Any]]: Results organized by module
+    """
+    module_results = {}
+    
+    for category, test_files in module_structure.items():
+        category_results = {
+            "passed": 0,
+            "failed": 0,
+            "skipped": 0,
+            "files": {}
+        }
+        
+        for test_file in test_files:
+            if test_file in test_results:
+                file_results = test_results[test_file]
+                category_results["passed"] += file_results["passed"]
+                category_results["failed"] += file_results["failed"]
+                category_results["skipped"] += file_results["skipped"]
+                category_results["files"][test_file] = file_results
+        
+        if category_results["passed"] + category_results["failed"] + category_results["skipped"] > 0:
+            module_results[category] = category_results
+    
+    return module_results
+
+def _generate_html_content(run_id: str, test_results: Dict[str, Any], module_results: Dict[str, Dict[str, Any]],
+                         total_tests: int, total_passed: int, total_failed: int, total_skipped: int,
                          pass_rate: float, log_entries: list, viz_report_dir: Path) -> str:
     """Generate the HTML content for the test report"""
+    
+    # Generate module-specific sections
+    module_sections = ""
+    for module, results in module_results.items():
+        module_pass_rate = (results["passed"] / (results["passed"] + results["failed"] + results["skipped"])) * 100 if (results["passed"] + results["failed"] + results["skipped"]) > 0 else 0
+        
+        module_sections += f"""
+        <div class="card mt-4">
+            <div class="card-header">
+                <h4 class="mb-0">{module} Module</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card metric-card">
+                            <div class="card-body text-center">
+                                <h5>Tests</h5>
+                                <h2>{results["passed"] + results["failed"] + results["skipped"]}</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card metric-card bg-success text-white">
+                            <div class="card-body text-center">
+                                <h5>Passed</h5>
+                                <h2>{results["passed"]}</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card metric-card bg-danger text-white">
+                            <div class="card-body text-center">
+                                <h5>Failed</h5>
+                                <h2>{results["failed"]}</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card metric-card bg-warning">
+                            <div class="card-body text-center">
+                                <h5>Skipped</h5>
+                                <h2>{results["skipped"]}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="progress" style="height: 30px;">
+                            <div class="progress-bar bg-success" 
+                                 role="progressbar" 
+                                 style="width: {module_pass_rate}%"
+                                 aria-valuenow="{module_pass_rate}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                                {module_pass_rate:.1f}% Pass Rate
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-responsive mt-4">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Test File</th>
+                                <th>Passed</th>
+                                <th>Failed</th>
+                                <th>Skipped</th>
+                                <th>Pass Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {''.join(
+                                f"<tr>"
+                                f"<td>{test_file}</td>"
+                                f"<td class='text-success'>{file_results['passed']}</td>"
+                                f"<td class='text-danger'>{file_results['failed']}</td>"
+                                f"<td class='text-warning'>{file_results['skipped']}</td>"
+                                f"<td><div class='progress'>"
+                                f"<div class='progress-bar bg-success' role='progressbar' "
+                                f"style='width: {(file_results['passed'] / sum(file_results.values()) * 100) if sum(file_results.values()) > 0 else 0}%'>"
+                                f"{(file_results['passed'] / sum(file_results.values()) * 100) if sum(file_results.values()) > 0 else 0:.1f}%"
+                                f"</div></div></td></tr>"
+                                for test_file, file_results in results['files'].items()
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        """
+    
     return f"""
     <!DOCTYPE html>
     <html lang="en">
@@ -104,6 +252,16 @@ def _generate_html_content(run_id: str, test_results: Dict[str, Any], total_test
                 margin: 10px;
                 min-width: 200px;
             }}
+            .module-section {{
+                margin-bottom: 2rem;
+            }}
+            .progress {{
+                height: 20px;
+                margin-bottom: 10px;
+            }}
+            .progress-bar {{
+                line-height: 20px;
+            }}
         </style>
     </head>
     <body>
@@ -115,11 +273,12 @@ def _generate_html_content(run_id: str, test_results: Dict[str, Any], total_test
         </nav>
         
         <div class="container-fluid mt-4">
+            <!-- Overall Summary -->
             <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="mb-0">Test Summary</h4>
+                            <h4 class="mb-0">Overall Test Summary</h4>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -166,7 +325,7 @@ def _generate_html_content(run_id: str, test_results: Dict[str, Any], total_test
                                              aria-valuenow="{pass_rate}" 
                                              aria-valuemin="0" 
                                              aria-valuemax="100">
-                                            {pass_rate:.1f}% Pass Rate
+                                            {pass_rate:.1f}% Overall Pass Rate
                                         </div>
                                     </div>
                                 </div>
@@ -176,44 +335,16 @@ def _generate_html_content(run_id: str, test_results: Dict[str, Any], total_test
                 </div>
             </div>
             
-            <div class="row mt-4">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4 class="mb-0">Module Results</h4>
-                        </div>
-                        <div class="card-body">
-                            <table class="table table-striped" id="moduleTable">
-                                <thead>
-                                    <tr>
-                                        <th>Module</th>
-                                        <th>Passed</th>
-                                        <th>Failed</th>
-                                        <th>Skipped</th>
-                                        <th>Pass Rate</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {''.join(
-                                        f"<tr>"
-                                        f"<td>{module}</td>"
-                                        f"<td class='text-success'>{results['passed']}</td>"
-                                        f"<td class='text-danger'>{results['failed']}</td>"
-                                        f"<td class='text-warning'>{results['skipped']}</td>"
-                                        f"<td><div class='progress'>"
-                                        f"<div class='progress-bar bg-success' role='progressbar' "
-                                        f"style='width: {(results['passed'] / sum(results.values()) * 100) if sum(results.values()) > 0 else 0}%'>"
-                                        f"{(results['passed'] / sum(results.values()) * 100) if sum(results.values()) > 0 else 0:.1f}%"
-                                        f"</div></div></td></tr>"
-                                        for module, results in test_results.items()
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+            <!-- Module Results -->
+            <div class="row">
+                <div class="col-12">
+                    {module_sections}
                 </div>
-                
-                <div class="col-md-6">
+            </div>
+            
+            <!-- Visualizations -->
+            <div class="row mt-4">
+                <div class="col-12">
                     <div class="card">
                         <div class="card-header">
                             <h4 class="mb-0">Test Visualizations</h4>
@@ -247,7 +378,8 @@ def _generate_html_content(run_id: str, test_results: Dict[str, Any], total_test
                 </div>
             </div>
             
-            <div class="row mt-4">
+            <!-- Log Output -->
+            <div class="row mt-4 mb-4">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
@@ -255,7 +387,7 @@ def _generate_html_content(run_id: str, test_results: Dict[str, Any], total_test
                         </div>
                         <div class="card-body">
                             <div class="log-viewer">
-                                {'<br>'.join(f'<span class="text-{"success" if "PASS" in entry else "danger" if "FAIL" in entry else "warning" if "SKIP" in entry else "info"}">{html.escape(entry)}</span>' for entry in log_entries)}
+                                {'<br>'.join(html.escape(log) for log in log_entries)}
                             </div>
                         </div>
                     </div>
@@ -265,9 +397,11 @@ def _generate_html_content(run_id: str, test_results: Dict[str, Any], total_test
         
         <script>
             $(document).ready(function() {{
-                $('#moduleTable').DataTable({{
-                    order: [[4, 'desc']],
-                    pageLength: 25
+                // Initialize DataTables
+                $('.table').DataTable({{
+                    pageLength: 25,
+                    order: [[1, 'desc']],
+                    dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>t<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>'
                 }});
             }});
         </script>

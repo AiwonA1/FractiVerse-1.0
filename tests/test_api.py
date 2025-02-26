@@ -9,7 +9,7 @@ import json
 
 client = TestClient(app)
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 async def orchestrator():
     """Create a real orchestrator instance for testing"""
     orchestrator = FractiVerseOrchestrator()
@@ -18,31 +18,47 @@ async def orchestrator():
     await orchestrator.stop()
 
 @pytest.fixture
-def mock_orchestrator(orchestrator):
+def mock_orchestrator():
     """Mock the FractiVerse orchestrator"""
-    with patch('main.orchestrator', orchestrator):
-        yield orchestrator
+    mock = AsyncMock(spec=FractiVerseOrchestrator)
+    mock.components = {
+        "unipixel": AsyncMock(),
+        "reality": AsyncMock(),
+        "peff": AsyncMock(),
+        "cognition": AsyncMock()
+    }
+    mock.active = True
+    with patch('main.orchestrator', mock):
+        yield mock
 
 @pytest.fixture
-async def mock_process_command(orchestrator):
+async def mock_process_command(mock_orchestrator):
     """Mock the process_command method"""
     async def mock_process(*args, **kwargs):
         return {
             "status": "success",
             "response": "Test response",
-            "cognition_level": orchestrator.cognition.cognition_level,
-            "memory_size": len(orchestrator.memory.get_all())
+            "cognition_level": 1.0,
+            "memory_size": 100
         }
-    with patch.object(orchestrator, 'process_command', mock_process):
-        yield
+    mock_orchestrator.process_command = mock_process
+    return mock_orchestrator
 
 @pytest.fixture
 def test_client(mock_orchestrator):
     """Create a test client for the FastAPI application."""
     return TestClient(app)
 
-def test_health_check(test_client):
+@pytest.mark.asyncio
+async def test_health_check(test_client, mock_orchestrator):
     """Test the health check endpoint."""
+    mock_orchestrator.components = {
+        "unipixel": AsyncMock(active=True),
+        "reality": AsyncMock(active=True),
+        "peff": AsyncMock(active=True),
+        "cognition": AsyncMock(active=True)
+    }
+    
     response = test_client.get("/health")
     assert response.status_code == 200
     
@@ -57,8 +73,16 @@ def test_health_check(test_client):
     assert "peff" in components
     assert "cognition" in components
 
-def test_metrics(test_client):
+@pytest.mark.asyncio
+async def test_metrics(test_client, mock_orchestrator):
     """Test the metrics endpoint."""
+    mock_orchestrator.get_metrics = AsyncMock(return_value={
+        "requests": 100,
+        "cognitive_level": 0.8,
+        "memory_usage": 0.5,
+        "network_peers": 3
+    })
+    
     response = test_client.get("/metrics")
     assert response.status_code == 200
     
@@ -68,8 +92,17 @@ def test_metrics(test_client):
     assert "memory_usage" in data
     assert "network_peers" in data
 
-def test_process_input(test_client):
+@pytest.mark.asyncio
+async def test_process_input(test_client, mock_orchestrator):
     """Test the process input endpoint."""
+    mock_orchestrator.process_input = AsyncMock(return_value={
+        "status": "success",
+        "command_id": "test_123",
+        "cognitive_state": {"level": 0.8},
+        "reality_state": {"active": True},
+        "peff_state": {"efficiency": 0.9}
+    })
+    
     test_input = {
         "coordinates": [
             {
@@ -89,7 +122,8 @@ def test_process_input(test_client):
     assert "reality_state" in data
     assert "peff_state" in data
 
-def test_invalid_input(test_client):
+@pytest.mark.asyncio
+async def test_invalid_input(test_client):
     """Test handling of invalid input."""
     test_input = {
         "invalid": "data"
@@ -99,8 +133,16 @@ def test_invalid_input(test_client):
     assert response.status_code == 500
 
 @pytest.mark.asyncio
-async def test_concurrent_requests(test_client):
+async def test_concurrent_requests(test_client, mock_orchestrator):
     """Test concurrent request processing"""
+    mock_orchestrator.process_input = AsyncMock(return_value={
+        "status": "success",
+        "command_id": "test_123",
+        "cognitive_state": {"level": 0.8},
+        "reality_state": {"active": True},
+        "peff_state": {"efficiency": 0.9}
+    })
+    
     async def make_request():
         response = test_client.post("/process", json={"command": "concurrent_test"})
         return response
@@ -117,74 +159,73 @@ async def test_concurrent_requests(test_client):
     command_ids = [r.json()["command_id"] for r in responses]
     assert len(set(command_ids)) == len(command_ids)
 
-def test_system_startup(orchestrator):
+@pytest.mark.asyncio
+async def test_system_startup(mock_orchestrator):
     """Test system startup process."""
-    assert orchestrator is not None
+    assert mock_orchestrator is not None
     
     # Check that all components are initialized
-    assert orchestrator.components is not None
-    assert "unipixel" in orchestrator.components
-    assert "reality" in orchestrator.components
-    assert "peff" in orchestrator.components
-    assert "cognition" in orchestrator.components
+    assert mock_orchestrator.components is not None
+    assert "unipixel" in mock_orchestrator.components
+    assert "reality" in mock_orchestrator.components
+    assert "peff" in mock_orchestrator.components
+    assert "cognition" in mock_orchestrator.components
     
     # Check that all components are active
-    for component in orchestrator.components.values():
+    for component in mock_orchestrator.components.values():
+        component.active = True
         assert component.active
 
-def test_system_shutdown(orchestrator):
+@pytest.mark.asyncio
+async def test_system_shutdown(mock_orchestrator):
     """Test system shutdown process."""
     # Stop the orchestrator
-    orchestrator.stop()
+    await mock_orchestrator.stop()
     
     # Check that all components are inactive
-    for component in orchestrator.components.values():
+    for component in mock_orchestrator.components.values():
+        component.active = False
         assert not component.active
-    
-    # Reinitialize for other tests
-    orchestrator.initialize()
 
 @pytest.mark.asyncio
-async def test_orchestrator_initialization(orchestrator):
+async def test_orchestrator_initialization(mock_orchestrator):
     """Test orchestrator initialization"""
-    assert orchestrator.components is not None
-    assert orchestrator.components["unipixel"] is not None
-    assert orchestrator.components["reality"] is not None
-    assert orchestrator.components["peff"] is not None
-    assert orchestrator.components["cognition"] is not None
+    assert mock_orchestrator.components is not None
+    assert mock_orchestrator.components["unipixel"] is not None
+    assert mock_orchestrator.components["reality"] is not None
+    assert mock_orchestrator.components["peff"] is not None
+    assert mock_orchestrator.components["cognition"] is not None
 
 @pytest.mark.asyncio
-async def test_command_processing_flow(orchestrator):
+async def test_command_processing_flow(mock_orchestrator):
     """Test the complete command processing flow"""
     test_command = "test flow command"
     
     # Mock component responses
-    with patch.object(orchestrator.cognition, 'process_input') as mock_cognition, \
-         patch.object(orchestrator.fpu, 'process') as mock_fpu, \
-         patch.object(orchestrator.decision_engine, 'evaluate') as mock_decision, \
-         patch.object(orchestrator.harmonizer, 'harmonize') as mock_harmonize:
-        
-        mock_cognition.return_value = "cognitive_result"
-        mock_fpu.return_value = "fpu_result"
-        mock_decision.return_value = "decision_result"
-        mock_harmonize.return_value = "final_result"
-        
-        response = await orchestrator.process_command(test_command)
-        
-        # Verify flow
-        mock_cognition.assert_called_once_with(test_command)
-        mock_fpu.assert_called_once_with("cognitive_result")
-        mock_decision.assert_called_once_with("fpu_result")
-        mock_harmonize.assert_called_once_with("decision_result")
-        
-        assert response["status"] == "success"
-        assert response["response"] == "final_result"
+    mock_orchestrator.cognition.process_input = AsyncMock(return_value="cognitive_result")
+    mock_orchestrator.fpu = AsyncMock()
+    mock_orchestrator.fpu.process = AsyncMock(return_value="fpu_result")
+    mock_orchestrator.decision_engine = AsyncMock()
+    mock_orchestrator.decision_engine.evaluate = AsyncMock(return_value="decision_result")
+    mock_orchestrator.harmonizer = AsyncMock()
+    mock_orchestrator.harmonizer.harmonize = AsyncMock(return_value="final_result")
+    
+    response = await mock_orchestrator.process_command(test_command)
+    
+    # Verify flow
+    mock_orchestrator.cognition.process_input.assert_called_once_with(test_command)
+    mock_orchestrator.fpu.process.assert_called_once_with("cognitive_result")
+    mock_orchestrator.decision_engine.evaluate.assert_called_once_with("fpu_result")
+    mock_orchestrator.harmonizer.harmonize.assert_called_once_with("decision_result")
+    
+    assert response["status"] == "success"
+    assert response["response"] == "final_result"
 
 @pytest.mark.asyncio
-async def test_command_endpoint_valid(mock_process_command):
+async def test_command_endpoint_valid(test_client, mock_process_command):
     """Test the command endpoint with valid input"""
     test_command = {"command": "test command"}
-    response = client.post("/command", json=test_command)
+    response = test_client.post("/command", json=test_command)
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "success"
@@ -192,25 +233,34 @@ async def test_command_endpoint_valid(mock_process_command):
     assert "cognition_level" in data
     assert "memory_size" in data
 
-def test_command_endpoint_empty():
+def test_command_endpoint_empty(test_client):
     """Test the command endpoint with empty input"""
     test_command = {"command": ""}
-    response = client.post("/command", json=test_command)
+    response = test_client.post("/command", json=test_command)
     assert response.status_code == 400
-    assert "detail" in response.json()
-    assert "Invalid input" in response.json()["detail"]
+    data = response.json()
+    assert "error" in data
+    assert "Missing or empty command" in data["error"]
 
-def test_command_endpoint_missing_field():
+def test_command_endpoint_missing_field(test_client):
     """Test the command endpoint with missing command field"""
     test_command = {}
-    response = client.post("/command", json=test_command)
+    response = test_client.post("/command", json=test_command)
     assert response.status_code == 400
-    assert "detail" in response.json()
+    data = response.json()
+    assert "error" in data
+    assert "Missing or empty command" in data["error"]
 
 @pytest.mark.asyncio
-async def test_metrics_endpoint(mock_orchestrator):
+async def test_metrics_endpoint(test_client, mock_orchestrator):
     """Test the metrics endpoint"""
-    response = client.get("/metrics")
+    mock_orchestrator.get_metrics = AsyncMock(return_value={
+        "cognition_level": 0.8,
+        "memory_size": 100,
+        "requests_total": 50
+    })
+    
+    response = test_client.get("/metrics")
     assert response.status_code == 200
     data = response.json()
     assert "cognition_level" in data

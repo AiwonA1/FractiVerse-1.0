@@ -13,8 +13,10 @@ async def unipixel_core():
     """Provide a test instance of UnipixelCore."""
     core = UnipixelCore(dimensions=3, test_mode=True)
     await core.initialize()
-    yield core
-    await core.shutdown()
+    try:
+        yield core
+    finally:
+        await core.shutdown()
 
 @pytest.fixture
 def test_particle():
@@ -118,7 +120,11 @@ async def test_energy_conservation(unipixel_core, test_particle):
 async def test_field_behaviors(unipixel_core, field_type, expected_behavior):
     """Test different field behaviors."""
     # Create test field
-    field = Field(field_type=field_type, strength=1.0)
+    field = Field(
+        field_type=field_type,
+        strength=1.0,
+        falloff=lambda r: 1/r**2 if r > 0 else 1.0
+    )
     field_id = await unipixel_core.add_field(field)
     
     # Add test particles

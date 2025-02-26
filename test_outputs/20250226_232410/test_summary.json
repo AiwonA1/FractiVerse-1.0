@@ -1,0 +1,21 @@
+{
+  "timestamp": "2025-02-26T15:24:14.965343",
+  "test_files": [
+    "logs/test_fractiverse_20250226_152414.log",
+    "logs/fractiverse_20250226_152410.log",
+    "report/index.html",
+    "report/visualizations/test_summary_20250226_232414.png",
+    "metrics/test_results.json",
+    "metrics/final_metrics.json",
+    "visualizations/test_summary_20250226_232414.png"
+  ],
+  "log_files": [
+    "test_fractiverse_20250226_152414.log",
+    "fractiverse_20250226_152410.log"
+  ],
+  "visualization_files": [],
+  "metrics_files": [
+    "test_results.json",
+    "final_metrics.json"
+  ]
+}
