@@ -1,6 +1,0 @@
-"""
-📄 FractiCody Constants
-"""
-FRACTICODY_VERSION = "1.0"
-MAX_INTELLIGENCE_DEPTH = 5
-ENABLE_PEFF = True

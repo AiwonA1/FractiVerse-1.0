@@ -1,15 +1,35 @@
 # Core Libraries
-numpy
-pandas
-networkx
-psutil
-requests
+numpy>=1.24.0
+pandas>=2.0.0
+networkx>=3.0
+psutil>=5.9.0
+requests>=2.28.0
+python-dotenv>=1.0.0
 
 # Web Frameworks
-flask
-fastapi
-uvicorn
-websockets
+fastapi>=0.100.0
+uvicorn[standard]>=0.23.0
+websockets>=11.0.0
 
 # Security & Cryptography
-pycryptodomex
+pycryptodomex>=3.19.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+pytest-sugar>=1.0.0
+pytest-xdist>=3.6.0
+pytest-timeout>=2.3.0
+pytest-benchmark>=5.1.0
+httpx>=0.24.0  # Required for FastAPI TestClient
+
+# Logging & Monitoring
+structlog>=23.1.0
+prometheus-client>=0.17.0
+
+# Development
+black>=23.0.0
+isort>=5.12.0
+flake8>=6.0.0
+mypy>=1.0.0

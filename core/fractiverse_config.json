@@ -1,0 +1,49 @@
+{
+  "version": "1.0.0",
+  "components": {
+    "fractal_intelligence": {
+      "enabled": true,
+      "unipixel_processing": true,
+      "recursive_learning": true,
+      "vector_dimension": 3
+    },
+    "fractichain": {
+      "enabled": true,
+      "network": "testnet",
+      "consensus": "recursive_proof_of_intelligence",
+      "block_time": 60
+    },
+    "fractinet": {
+      "enabled": true,
+      "p2p_port": 9000,
+      "max_peers": 100,
+      "sync_interval": 30
+    },
+    "fracti_treasury": {
+      "enabled": true,
+      "token_name": "FRACTI",
+      "initial_supply": 1000000,
+      "mining_reward": 10
+    },
+    "fracti_navigator": {
+      "enabled": true,
+      "visualization": "3d",
+      "update_interval": 1.0
+    }
+  },
+  "peff": {
+    "enabled": true,
+    "harmonization_interval": 5,
+    "quantum_alignment": true
+  },
+  "logging": {
+    "level": "INFO",
+    "rotation": "1 day",
+    "retention": "30 days"
+  },
+  "monitoring": {
+    "metrics_port": 9090,
+    "prometheus": true,
+    "visualization": true
+  }
+}
