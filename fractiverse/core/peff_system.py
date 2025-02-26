@@ -49,31 +49,39 @@ class PeffSystem:
             return None
             
         try:
-            # Extract reality matrix from input
-            reality_matrix = np.array(input_data.get("matrix", [[[0.0]]]))
+            # Clear field matrix
+            self.field_matrix.fill(0.0)
+            
+            # Process sparse matrix input
+            if 'sparse_matrix' in input_data:
+                for point in input_data['sparse_matrix']:
+                    x, y, z = point['position']
+                    if 0 <= x < 64 and 0 <= y < 64 and 0 <= z < 64:
+                        self.field_matrix[x, y, z] = point['value']
             
             # Apply PEFF field transformations
-            field_strength = np.sum(reality_matrix) / reality_matrix.size
-            field_gradient = np.gradient(reality_matrix)
+            field_strength = np.sum(self.field_matrix) / self.field_matrix.size
+            field_gradient = np.gradient(self.field_matrix)
             
-            # Update field matrix
+            # Update field matrix with gradient
             self.field_matrix = np.clip(
-                reality_matrix + field_gradient[0] * field_strength,
+                self.field_matrix + field_gradient[0] * field_strength,
                 0.0, 1.0
             )
             
-            # Generate coordinates for non-zero points
-            coordinates = []
+            # Generate sparse output for non-zero points
             non_zero = np.nonzero(self.field_matrix)
-            for x, y, z in zip(*non_zero):
-                coordinates.append({
+            coordinates = [
+                {
                     "position": [int(x), int(y), int(z)],
                     "value": float(self.field_matrix[x, y, z])
-                })
-                
+                }
+                for x, y, z in zip(*non_zero)
+            ]
+            
             # Update state
             self.state.update({
-                'last_input': input_data,
+                'last_input': input_data.get('reality_state', {}),
                 'field_strength': float(field_strength),
                 'active_points': len(coordinates)
             })
@@ -82,6 +90,7 @@ class PeffSystem:
                 'coordinates': coordinates,
                 'field_state': self.state
             }
+            
         except Exception as e:
             print(f"Failed to process input: {e}")
             return None

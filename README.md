@@ -4,18 +4,11 @@ A fractal intelligence system with cognitive processing, visualization, and moni
 
 ## Setup
 
-1. Create and activate a virtual environment:
-```bash
-python3 -m venv venv
-source venv/bin/activate  # Linux/Mac
-# or
-.\venv\Scripts\activate  # Windows
-```
+Run tests with
 
-2. Install dependencies:
-```bash
-python3 -m pip install -r requirements.txt
-```
+FRACTIVERSE_TESTING=true python3 main.py 
+
+From top level of the repo. 
 
 ## Running Tests
 

@@ -107,4 +107,54 @@ class CognitiveEngine:
             return True
         except Exception as e:
             print(f"Failed to reset CognitiveEngine: {e}")
-            return False 
+            return False
+
+    def process_command(self, command: str) -> Optional[Dict]:
+        """Process a command through the cognitive engine.
+        
+        Args:
+            command: Command string to process
+            
+        Returns:
+            Optional[Dict]: Command processing results or None if processing failed
+        """
+        if not self.active:
+            return None
+            
+        try:
+            # Basic command validation
+            if not command or not isinstance(command, str):
+                return None
+                
+            # Process command through reality system
+            reality_result = self.reality.process({
+                "type": "command",
+                "command": command
+            })
+            
+            if not reality_result:
+                return None
+                
+            # Process through PEFF system
+            peff_result = self.peff.process(reality_result)
+            if not peff_result:
+                return None
+                
+            # Update cognitive state
+            self.cognitive_state.update({
+                'last_command': command,
+                'reality_state': reality_result,
+                'peff_state': peff_result
+            })
+            
+            return {
+                'status': 'success',
+                'command': command,
+                'cognitive_state': self.cognitive_state,
+                'reality_result': reality_result,
+                'peff_result': peff_result
+            }
+            
+        except Exception as e:
+            print(f"Failed to process command: {e}")
+            return None 

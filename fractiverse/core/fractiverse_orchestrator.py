@@ -139,4 +139,49 @@ class FractiVerseOrchestrator:
             
         except Exception as e:
             print(f"Failed to stop FractiVerse system: {e}")
-            raise 
+            raise
+
+    async def process_command(self, command_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Process a command through the FractiVerse system.
+        
+        Args:
+            command_data: Dictionary containing command data to process
+            
+        Returns:
+            Dict[str, Any]: Command processing results
+        """
+        command_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+        print(f"Processing command {command_id}")
+        
+        try:
+            command = command_data.get("command")
+            if not command:
+                raise ValueError("Missing command")
+                
+            # Process through cognitive engine first
+            cognitive_result = self.components["cognition"].process_command(command)
+            if not cognitive_result:
+                raise Exception("Command processing failed")
+                
+            # Execute command based on cognitive analysis
+            result = {
+                "status": "success",
+                "command_id": command_id,
+                "command": command,
+                "cognitive_result": cognitive_result
+            }
+            
+            # Add component-specific results if available
+            for component_name, component in self.components.items():
+                if hasattr(component, "get_metrics"):
+                    result[f"{component_name}_metrics"] = component.get_metrics()
+            
+            return result
+            
+        except Exception as e:
+            print(f"Error processing command {command_id}: {e}")
+            return {
+                "status": "error",
+                "command_id": command_id,
+                "error": str(e)
+            } 

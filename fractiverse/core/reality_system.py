@@ -57,18 +57,34 @@ class RealitySystem:
                     if 0 <= x < 64 and 0 <= y < 64 and 0 <= z < 64:
                         self.reality_matrix[x, y, z] = value
                         
-            # Update state
+            # Update state with summary statistics
+            matrix_sum = float(np.sum(self.reality_matrix))
+            matrix_mean = float(np.mean(self.reality_matrix))
+            matrix_std = float(np.std(self.reality_matrix))
+            
+            # Get non-zero coordinates for efficient output
+            non_zero_coords = np.nonzero(self.reality_matrix)
+            sparse_matrix = [
+                {
+                    'position': [int(x), int(y), int(z)],
+                    'value': float(self.reality_matrix[x, y, z])
+                }
+                for x, y, z in zip(*non_zero_coords)
+            ]
+            
             self.state.update({
                 'last_input': input_data,
-                'matrix_sum': float(np.sum(self.reality_matrix)),
-                'matrix_mean': float(np.mean(self.reality_matrix)),
-                'matrix_std': float(np.std(self.reality_matrix))
+                'matrix_sum': matrix_sum,
+                'matrix_mean': matrix_mean,
+                'matrix_std': matrix_std,
+                'active_points': len(sparse_matrix)
             })
             
             return {
                 'reality_state': self.state,
-                'matrix': self.reality_matrix.tolist()
+                'sparse_matrix': sparse_matrix
             }
+            
         except Exception as e:
             print(f"Failed to process input: {e}")
             return None

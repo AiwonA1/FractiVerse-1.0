@@ -1,0 +1,19 @@
+2025-02-26 14:54:07,455 [INFO] fractiverse_server: {"event": "Initializing FractiVerse server", "level": "info", "timestamp": "2025-02-26T22:54:07.455356Z"}
+2025-02-26 14:54:07,455 [DEBUG] asyncio: Using selector: EpollSelector
+2025-02-26 14:54:07,468 [INFO] fractiverse_main: {"environment": "development", "testing": true, "event": "Starting FractiVerse 1.0", "level": "info", "timestamp": "2025-02-26T22:54:07.468122Z"}
+2025-02-26 14:54:07,476 [INFO] fractiverse_main: {"port": 9090, "event": "Metrics server started", "level": "info", "timestamp": "2025-02-26T22:54:07.476778Z"}
+2025-02-26 14:54:07,477 [INFO] fractiverse_tests: {"event": "Starting logging tests", "level": "info", "timestamp": "2025-02-26T22:54:07.477023Z"}
+2025-02-26 14:54:07,477 [DEBUG] fractiverse_tests: {"event": "Test debug message", "level": "debug", "timestamp": "2025-02-26T22:54:07.477157Z"}
+2025-02-26 14:54:07,477 [INFO] fractiverse_tests: {"event": "Test info message", "level": "info", "timestamp": "2025-02-26T22:54:07.477228Z"}
+2025-02-26 14:54:07,477 [WARNING] fractiverse_tests: {"event": "Test warning message", "level": "warning", "timestamp": "2025-02-26T22:54:07.477291Z"}
+2025-02-26 14:54:07,477 [ERROR] fractiverse_tests: {"event": "Test error message", "level": "error", "timestamp": "2025-02-26T22:54:07.477356Z"}
+2025-02-26 14:54:07,477 [CRITICAL] fractiverse_tests: {"event": "Test critical message", "level": "critical", "timestamp": "2025-02-26T22:54:07.477413Z"}
+2025-02-26 14:54:07,477 [INFO] fractiverse_tests: {"event": "Completed logging tests successfully", "level": "info", "timestamp": "2025-02-26T22:54:07.477477Z"}
+2025-02-26 14:54:07,477 [INFO] fractiverse_tests: {"event": "Starting visualization tests", "level": "info", "timestamp": "2025-02-26T22:54:07.477554Z"}
+2025-02-26 14:54:07,477 [INFO] fractiverse_tests: {"event": "Completed visualization tests successfully", "level": "info", "timestamp": "2025-02-26T22:54:07.477614Z"}
+2025-02-26 14:54:07,477 [INFO] fractiverse_tests: {"event": "Starting module tests", "level": "info", "timestamp": "2025-02-26T22:54:07.477688Z"}
+2025-02-26 14:54:07,477 [INFO] fractiverse_tests: {"event": "Completed module tests successfully", "level": "info", "timestamp": "2025-02-26T22:54:07.477747Z"}
+2025-02-26 14:54:07,521 [DEBUG] matplotlib.pyplot: Loaded backend qtagg version 6.7.1.
+2025-02-26 14:54:08,104 [INFO] fractiverse_reporting: {"report_file": "/home/trim/Documents/GitHub/fractiverse-1.0/test_outputs/20250226_225407/report/index.html", "event": "HTML test report generated", "level": "info", "timestamp": "2025-02-26T22:54:08.104759Z"}
+2025-02-26 14:54:08,117 [INFO] fractiverse_main: {"metrics_file": "/home/trim/Documents/GitHub/fractiverse-1.0/test_outputs/20250226_225407/metrics/final_metrics.json", "results_file": "/home/trim/Documents/GitHub/fractiverse-1.0/test_outputs/20250226_225407/metrics/test_results.json", "event": "Test artifacts saved successfully", "level": "info", "timestamp": "2025-02-26T22:54:08.117354Z"}
+2025-02-26 14:54:08,117 [INFO] fractiverse_main: {"event": "FractiVerse 1.0 started successfully", "level": "info", "timestamp": "2025-02-26T22:54:08.117549Z"}

@@ -9,7 +9,7 @@ from core.logging_config import (
     save_visualization,
     SafeLogger,
 )
-from conftest import LOG_DIR, VIZ_DIR, METRICS_DIR
+from .conftest import LOG_DIR, VIZ_DIR, METRICS_DIR
 
 logger = logging.getLogger("fractiverse.test.logging")
 

@@ -1,39 +1,42 @@
 import pytest
 from fastapi.testclient import TestClient
 import asyncio
-from unittest.mock import Mock, patch
-from main import app, orchestrator
+from unittest.mock import Mock, patch, AsyncMock
+from main import app
+from fractiverse.core.fractiverse_orchestrator import FractiVerseOrchestrator
 from datetime import datetime
 import json
 
 client = TestClient(app)
 
-@pytest.fixture
-def mock_orchestrator():
-    """Mock the FractiVerse orchestrator"""
-    with patch('main.FractiVerseOrchestrator') as mock:
-        mock.return_value.cognition.learning_active = True
-        mock.return_value.cognition.cognition_level = 1.0
-        mock.return_value.memory.get_all.return_value = {}
-        mock.return_value.fpu.status.return_value = "ready"
-        mock.return_value.decision_engine.status.return_value = "operational"
-        yield mock
+@pytest.fixture(scope="session")
+async def orchestrator():
+    """Create a real orchestrator instance for testing"""
+    orchestrator = FractiVerseOrchestrator()
+    await orchestrator.start()
+    return orchestrator
 
 @pytest.fixture
-async def mock_process_command():
+def mock_orchestrator(orchestrator):
+    """Mock the FractiVerse orchestrator"""
+    with patch('main.orchestrator', orchestrator):
+        yield orchestrator
+
+@pytest.fixture
+async def mock_process_command(orchestrator):
     """Mock the process_command method"""
     async def mock_process(*args, **kwargs):
         return {
             "status": "success",
             "response": "Test response",
-            "cognition_level": 1.0,
-            "memory_size": 0
+            "cognition_level": orchestrator.cognition.cognition_level,
+            "memory_size": len(orchestrator.memory.get_all())
         }
     with patch.object(orchestrator, 'process_command', mock_process):
         yield
 
 @pytest.fixture
-def test_client():
+def test_client(mock_orchestrator):
     """Create a test client for the FastAPI application."""
     return TestClient(app)
 
@@ -113,11 +116,12 @@ async def test_concurrent_requests(test_client):
     command_ids = [r.json()["command_id"] for r in responses]
     assert len(set(command_ids)) == len(command_ids)
 
-def test_system_startup():
+def test_system_startup(orchestrator):
     """Test system startup process."""
     assert orchestrator is not None
     
     # Check that all components are initialized
+    assert orchestrator.components is not None
     assert "unipixel" in orchestrator.components
     assert "reality" in orchestrator.components
     assert "peff" in orchestrator.components
@@ -127,7 +131,7 @@ def test_system_startup():
     for component in orchestrator.components.values():
         assert component.active
 
-def test_system_shutdown():
+def test_system_shutdown(orchestrator):
     """Test system shutdown process."""
     # Stop the orchestrator
     orchestrator.stop()
@@ -135,6 +139,45 @@ def test_system_shutdown():
     # Check that all components are inactive
     for component in orchestrator.components.values():
         assert not component.active
+    
+    # Reinitialize for other tests
+    orchestrator.initialize()
+
+@pytest.mark.asyncio
+async def test_orchestrator_initialization(orchestrator):
+    """Test orchestrator initialization"""
+    assert orchestrator.components is not None
+    assert orchestrator.components["unipixel"] is not None
+    assert orchestrator.components["reality"] is not None
+    assert orchestrator.components["peff"] is not None
+    assert orchestrator.components["cognition"] is not None
+
+@pytest.mark.asyncio
+async def test_command_processing_flow(orchestrator):
+    """Test the complete command processing flow"""
+    test_command = "test flow command"
+    
+    # Mock component responses
+    with patch.object(orchestrator.cognition, 'process_input') as mock_cognition, \
+         patch.object(orchestrator.fpu, 'process') as mock_fpu, \
+         patch.object(orchestrator.decision_engine, 'evaluate') as mock_decision, \
+         patch.object(orchestrator.harmonizer, 'harmonize') as mock_harmonize:
+        
+        mock_cognition.return_value = "cognitive_result"
+        mock_fpu.return_value = "fpu_result"
+        mock_decision.return_value = "decision_result"
+        mock_harmonize.return_value = "final_result"
+        
+        response = await orchestrator.process_command(test_command)
+        
+        # Verify flow
+        mock_cognition.assert_called_once_with(test_command)
+        mock_fpu.assert_called_once_with("cognitive_result")
+        mock_decision.assert_called_once_with("fpu_result")
+        mock_harmonize.assert_called_once_with("decision_result")
+        
+        assert response["status"] == "success"
+        assert response["response"] == "final_result"
 
 @pytest.mark.asyncio
 async def test_command_endpoint_valid(mock_process_command):
@@ -172,41 +215,6 @@ async def test_metrics_endpoint(mock_orchestrator):
     assert "cognition_level" in data
     assert "memory_size" in data
     assert "requests_total" in data
-
-@pytest.mark.asyncio
-async def test_orchestrator_initialization():
-    """Test orchestrator initialization"""
-    assert orchestrator.components["unipixel"] is not None
-    assert orchestrator.components["reality"] is not None
-    assert orchestrator.components["peff"] is not None
-    assert orchestrator.components["cognition"] is not None
-
-@pytest.mark.asyncio
-async def test_command_processing_flow():
-    """Test the complete command processing flow"""
-    test_command = "test flow command"
-    
-    # Mock component responses
-    with patch.object(orchestrator.cognition, 'process_input') as mock_cognition, \
-         patch.object(orchestrator.fpu, 'process') as mock_fpu, \
-         patch.object(orchestrator.decision_engine, 'evaluate') as mock_decision, \
-         patch.object(orchestrator.harmonizer, 'harmonize') as mock_harmonize:
-        
-        mock_cognition.return_value = "cognitive_result"
-        mock_fpu.return_value = "fpu_result"
-        mock_decision.return_value = "decision_result"
-        mock_harmonize.return_value = "final_result"
-        
-        response = await orchestrator.process_command(test_command)
-        
-        # Verify flow
-        mock_cognition.assert_called_once_with(test_command)
-        mock_fpu.assert_called_once_with("cognitive_result")
-        mock_decision.assert_called_once_with("fpu_result")
-        mock_harmonize.assert_called_once_with("decision_result")
-        
-        assert response["status"] == "success"
-        assert response["response"] == "final_result"
 
 @pytest.fixture(autouse=True)
 def setup_teardown():

@@ -1,0 +1,12 @@
+{
+  "name": "test_status",
+  "type": "status",
+  "timestamp": "20250226_141555",
+  "data": {
+    "metrics": {
+      "value": 1.0
+    },
+    "status": "healthy",
+    "timestamp": "2025-02-26T14:15:55.228107"
+  }
+}

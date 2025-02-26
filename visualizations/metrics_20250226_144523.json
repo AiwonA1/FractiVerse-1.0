@@ -1,0 +1,11 @@
+{
+  "name": "metrics",
+  "type": "gauge",
+  "timestamp": "20250226_144523",
+  "data": {
+    "cognitive_level": 0.0,
+    "memory_usage": 0.0,
+    "network_peers": 0.0,
+    "requests_total": 0.0,
+    "components": {
+      "unipixel": 

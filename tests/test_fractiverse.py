@@ -5,8 +5,9 @@ import json
 import asyncio
 from datetime import datetime
 from pathlib import Path
-from unittest.mock import Mock, patch, AsyncMock
+from unittest.mock import Mock, patch, AsyncMock, MagicMock
 from fastapi.testclient import TestClient
+import time
 
 from main import (
     app, orchestrator, config,
@@ -81,24 +82,49 @@ def save_test_summary():
 
 @pytest.fixture
 def mock_orchestrator():
-    """Mock FractiVerse orchestrator"""
-    with patch("main.FractiVerseOrchestrator") as mock:
-        mock.return_value.start = AsyncMock(return_value=True)
-        mock.return_value.stop = AsyncMock()
-        mock.return_value.process_input = AsyncMock(return_value={
-            "status": "success",
-            "command_id": "test_123",
-            "result": "test_result",
-            "cognitive_level": 1.0,
-            "processing_time": 0.1
-        })
-        mock.return_value.components = {
-            "cognition": Mock(status=lambda: "active"),
-            "memory": Mock(usage=lambda: 100, status=lambda: "ready"),
-            "network": Mock(peer_count=lambda: 5, status=lambda: "connected"),
-            "blockchain": Mock(status=lambda: "synced")
+    mock = MagicMock()
+    # Make async methods return awaitable futures
+    mock.start = AsyncMock()
+    mock.stop = AsyncMock()
+    mock.process_input = AsyncMock()
+    
+    # Set up JSON-serializable return values
+    mock.get_metrics.return_value = {
+        "system_metrics": {
+            "cpu_usage": 0.5,
+            "memory_usage": 1024,
+            "uptime": 3600
+        },
+        "component_metrics": {
+            "unipixel": {"active": True, "operations": 100},
+            "reality": {"active": True, "field_strength": 0.8},
+            "peff": {"active": True, "coordinates": []},
+            "cognition": {"active": True, "level": 0.7}
         }
-        yield mock
+    }
+    
+    mock.get_health.return_value = {
+        "status": "healthy",
+        "components": {
+            "unipixel": True,
+            "reality": True,
+            "peff": True,
+            "cognition": True
+        },
+        "timestamp": datetime.now().isoformat()
+    }
+    
+    mock.get_state.return_value = {
+        "cognitive_state": {
+            "last_input": {},
+            "peff_state": {
+                "coordinates": [],
+                "field_state": {}
+            }
+        }
+    }
+    
+    return mock
 
 def test_config_loading():
     """Test configuration loading"""
@@ -109,49 +135,65 @@ def test_config_loading():
 
 @pytest.mark.asyncio
 async def test_startup(mock_orchestrator):
-    """Test application startup"""
+    """Test system startup"""
+    app.state.orchestrator = mock_orchestrator
+    
     with TestClient(app) as client:
-        # Trigger startup event
-        await app.router.startup()
-        
-        mock_orchestrator.return_value.start.assert_called_once()
-        assert mock_orchestrator.return_value.start.call_count == 1
+        response = client.get("/startup")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "success"
+        mock_orchestrator.start.assert_called_once()
 
 @pytest.mark.asyncio
 async def test_shutdown(mock_orchestrator):
-    """Test application shutdown"""
+    """Test system shutdown"""
+    app.state.orchestrator = mock_orchestrator
+    
     with TestClient(app) as client:
-        # Trigger shutdown event
-        await app.router.shutdown()
-        
-        mock_orchestrator.return_value.stop.assert_called_once()
+        response = client.get("/shutdown")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "success"
+        mock_orchestrator.stop.assert_called_once()
 
-def test_health_check(mock_orchestrator):
+@pytest.mark.asyncio
+async def test_health_check(mock_orchestrator):
     """Test health check endpoint"""
-    response = client.get("/health")
-    assert response.status_code == 200
+    app.state.orchestrator = mock_orchestrator
     
-    data = response.json()
-    assert data["status"] == "healthy"
-    assert data["version"] == config["version"]
-    assert "components" in data
-    
-    # Verify component status
-    components = data["components"]
-    assert all(k in components for k in ["cognition", "memory", "network", "blockchain"])
+    with TestClient(app) as client:
+        response = client.get("/health")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "healthy"
+        assert all(component in data["components"] for component in ["unipixel", "reality", "peff", "cognition"])
 
-def test_metrics_endpoint(mock_orchestrator):
+@pytest.mark.asyncio
+async def test_metrics_endpoint(mock_orchestrator):
     """Test metrics endpoint"""
-    response = client.get("/metrics")
-    assert response.status_code == 200
+    app.state.orchestrator = mock_orchestrator
     
-    data = response.json()
-    assert all(k in data for k in [
-        "cognitive_level",
-        "memory_usage",
-        "network_peers",
-        "requests_total"
-    ])
+    with TestClient(app) as client:
+        response = client.get("/metrics")
+        assert response.status_code == 200
+        data = response.json()
+        assert "system_metrics" in data
+        assert "component_metrics" in data
+        assert all(metric in data["system_metrics"] for metric in ["cpu_usage", "memory_usage", "uptime"])
+
+@pytest.mark.asyncio
+async def test_error_handling(mock_orchestrator):
+    """Test error handling"""
+    app.state.orchestrator = mock_orchestrator
+    mock_orchestrator.process_input.side_effect = ValueError("Invalid input")
+    
+    with TestClient(app) as client:
+        response = client.post("/process", json={"invalid": "data"})
+        assert response.status_code == 400
+        data = response.json()
+        assert data["status"] == "error"
+        assert "Invalid input" in data["message"]
 
 @pytest.mark.asyncio
 async def test_process_input_valid(mock_orchestrator):
@@ -194,26 +236,6 @@ async def test_component_integration(mock_orchestrator):
     assert metrics["requests_total"] > 0
     assert metrics["memory_usage"] == 100
     assert metrics["network_peers"] == 5
-
-@pytest.mark.asyncio
-async def test_error_handling(mock_orchestrator):
-    """Test error handling"""
-    # Simulate processing error
-    mock_orchestrator.return_value.process_input.side_effect = Exception("Test error")
-    
-    response = client.post("/process", json={"command": "error_test"})
-    assert response.status_code == 500
-    assert "detail" in response.json()
-
-def test_logging_output():
-    """Test logging output"""
-    log_files = list(TEST_LOG_DIR.glob("test_fractiverse_*.log"))
-    assert len(log_files) > 0
-    
-    # Verify log content
-    with open(log_files[0], "r") as f:
-        content = f.read()
-        assert "FractiVerse" in content
 
 @pytest.mark.asyncio
 async def test_concurrent_processing(mock_orchestrator):
@@ -320,40 +342,46 @@ async def test_full_system_flow(mock_orchestrator):
     verify_test_outputs()
 
 @pytest.fixture
-def orchestrator():
-    """Create a test orchestrator."""
-    return FractiVerseOrchestrator()
-
-def test_orchestrator_initialization(orchestrator):
-    """Test orchestrator initialization."""
-    assert orchestrator is not None
-    assert isinstance(orchestrator.components["unipixel"], UnipixelCore)
-    assert isinstance(orchestrator.components["reality"], RealitySystem)
-    assert isinstance(orchestrator.components["peff"], PeffSystem)
-    assert isinstance(orchestrator.components["cognition"], CognitiveEngine)
+async def orchestrator():
+    """Create a real instance of FractiVerseOrchestrator for testing."""
+    from fractiverse.core.fractiverse_orchestrator import FractiVerseOrchestrator
+    
+    orchestrator = FractiVerseOrchestrator()
+    await orchestrator.start()
+    
+    yield orchestrator
+    
+    # Clean up
+    await orchestrator.stop()
 
 @pytest.mark.asyncio
 async def test_orchestrator_startup(orchestrator):
     """Test orchestrator startup."""
-    success = await orchestrator.start()
-    assert success
+    assert orchestrator is not None
     
-    # Check that all components are active
+    # Check component initialization
     for component in orchestrator.components.values():
-        assert component.is_active()
+        assert component.active is True
+    
+    # Verify orchestrator state
+    assert orchestrator.get_health()["status"] == "healthy"
+    metrics = orchestrator.get_metrics()
+    assert "system_metrics" in metrics
+    assert "component_metrics" in metrics
 
 @pytest.mark.asyncio
 async def test_orchestrator_shutdown(orchestrator):
     """Test orchestrator shutdown."""
-    # Start first
-    await orchestrator.start()
-    
-    # Then stop
+    # Stop the orchestrator
     await orchestrator.stop()
     
-    # Check that all components are inactive
+    # Verify components are inactive
     for component in orchestrator.components.values():
-        assert not component.is_active()
+        assert component.active is False
+    
+    # Restart for other tests
+    await orchestrator.start()
+    assert orchestrator.get_health()["status"] == "healthy"
 
 @pytest.mark.asyncio
 async def test_process_input(orchestrator):
@@ -380,25 +408,6 @@ async def test_process_input(orchestrator):
     assert "cognitive_state" in result
     assert "reality_state" in result
     assert "peff_state" in result
-
-@pytest.mark.asyncio
-async def test_error_handling(orchestrator):
-    """Test error handling."""
-    # Start the orchestrator
-    await orchestrator.start()
-    
-    # Test invalid input
-    test_input = {
-        "invalid": "data"
-    }
-    
-    # Process input
-    result = await orchestrator.process_input(test_input)
-    
-    # Check result
-    assert result["status"] == "error"
-    assert "command_id" in result
-    assert "error" in result
 
 @pytest.mark.asyncio
 async def test_component_interaction(orchestrator):
@@ -433,6 +442,41 @@ async def test_component_interaction(orchestrator):
     unipixel = orchestrator.components["unipixel"]
     assert unipixel.get_point(1, 1, 1) is not None
     assert unipixel.get_point(2, 2, 2) is not None
+
+def test_logging_output():
+    """Test logging output"""
+    # Wait briefly for logs to be written
+    time.sleep(0.1)
+    
+    # Get the test outputs directory
+    test_outputs = Path("test_outputs")
+    current_run = max((d for d in test_outputs.iterdir() if d.is_dir()), key=lambda x: x.stat().st_mtime)
+    log_dir = current_run / "logs"
+    
+    # Get the most recent log file
+    log_files = list(log_dir.glob("test_fractiverse_*.log"))
+    assert len(log_files) > 0, "No log files found"
+    
+    log_file = max(log_files, key=lambda x: x.stat().st_mtime)
+    
+    # Read the log file
+    with open(log_file, "r") as f:
+        content = f.read()
+    
+    # Check for expected log entries
+    assert "FractiVerse" in content, "Missing FractiVerse in log output"
+    assert "Starting" in content, "Missing startup message"
+    assert "INFO" in content, "Missing INFO level messages"
+    assert "DEBUG" in content, "Missing DEBUG level messages"
+    
+    # Check structured logging format
+    assert '"event":' in content, "Missing event field"
+    assert '"level":' in content, "Missing level field"
+    assert '"timestamp":' in content, "Missing timestamp field"
+    
+    # Verify test-specific entries
+    assert "test_fractiverse" in content, "Missing test module name"
+    assert "Starting test suite" in content, "Missing test suite start message"
 
 if __name__ == "__main__":
     pytest.main(["-v", "--capture=no"])

@@ -1,0 +1,182 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>FractiVerse Test Report - 20250226_225407</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <style>
+            .test-summary { padding: 20px; }
+            .visualization { margin: 20px 0; }
+            .log-viewer { 
+                max-height: 400px; 
+                overflow-y: auto; 
+                background: #f8f9fa; 
+                padding: 10px;
+                font-family: monospace;
+            }
+            .status-badge {
+                font-size: 1.2em;
+                padding: 5px 10px;
+            }
+            .metric-card {
+                margin: 10px;
+                min-width: 200px;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">FractiVerse Test Report</a>
+                <span class="navbar-text">Run ID: 20250226_225407</span>
+            </div>
+        </nav>
+        
+        <div class="container-fluid mt-4">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0">Test Summary</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="card metric-card">
+                                        <div class="card-body text-center">
+                                            <h5>Total Tests</h5>
+                                            <h2>8</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card metric-card bg-success text-white">
+                                        <div class="card-body text-center">
+                                            <h5>Passed</h5>
+                                            <h2>8</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card metric-card bg-danger text-white">
+                                        <div class="card-body text-center">
+                                            <h5>Failed</h5>
+                                            <h2>0</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card metric-card bg-warning">
+                                        <div class="card-body text-center">
+                                            <h5>Skipped</h5>
+                                            <h2>0</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <div class="progress" style="height: 30px;">
+                                        <div class="progress-bar bg-success" 
+                                             role="progressbar" 
+                                             style="width: 100.0%"
+                                             aria-valuenow="100.0" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100">
+                                            100.0% Pass Rate
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0">Module Results</h4>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-striped" id="moduleTable">
+                                <thead>
+                                    <tr>
+                                        <th>Module</th>
+                                        <th>Passed</th>
+                                        <th>Failed</th>
+                                        <th>Skipped</th>
+                                        <th>Pass Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>logging</td><td class='text-success'>6</td><td class='text-danger'>0</td><td class='text-warning'>0</td><td><div class='progress'><div class='progress-bar bg-success' role='progressbar' style='width: 100.0%'>100.0%</div></div></td></tr><tr><td>visualization</td><td class='text-success'>1</td><td class='text-danger'>0</td><td class='text-warning'>0</td><td><div class='progress'><div class='progress-bar bg-success' role='progressbar' style='width: 100.0%'>100.0%</div></div></td></tr><tr><td>modules</td><td class='text-success'>1</td><td class='text-danger'>0</td><td class='text-warning'>0</td><td><div class='progress'><div class='progress-bar bg-success' role='progressbar' style='width: 100.0%'>100.0%</div></div></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0">Test Visualizations</h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="visualizationCarousel" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    <div class='carousel-item active'><img src='visualizations/test_summary_20250226_225407.png' class='d-block w-100' alt='test_summary_20250226_225407'><div class='carousel-caption d-none d-md-block bg-dark bg-opacity-75'><h5>test_summary_20250226_225407</h5></div></div>
+                                </div>
+                                <button class="carousel-control-prev" type="button" 
+                                        data-bs-target="#visualizationCarousel" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" 
+                                        data-bs-target="#visualizationCarousel" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0">Test Logs</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="log-viewer">
+                                <span class="text-info">2025-02-26 14:54:07,455 [INFO] fractiverse_server: {&quot;event&quot;: &quot;Initializing FractiVerse server&quot;, &quot;level&quot;: &quot;info&quot;, &quot;timestamp&quot;: &quot;2025-02-26T22:54:07.455356Z&quot;}</span><br><span class="text-info">2025-02-26 14:54:07,455 [DEBUG] asyncio: Using selector: EpollSelector</span><br><span class="text-info">2025-02-26 14:54:07,468 [INFO] fractiverse_main: {&quot;environment&quot;: &quot;development&quot;, &quot;testing&quot;: true, &quot;event&quot;: &quot;Starting FractiVerse 1.0&quot;, &quot;level&quot;: &quot;info&quot;, &quot;timestamp&quot;: &quot;2025-02-26T22:54:07.468122Z&quot;}</span><br><span class="text-info">2025-02-26 14:54:07,476 [INFO] fractiverse_main: {&quot;port&quot;: 9090, &quot;event&quot;: &quot;Metrics server started&quot;, &quot;level&quot;: &quot;info&quot;, &quot;timestamp&quot;: &quot;2025-02-26T22:54:07.476778Z&quot;}</span><br><span class="text-info">2025-02-26 14:54:07,477 [INFO] fractiverse_tests: {&quot;event&quot;: &quot;Starting logging tests&quot;, &quot;level&quot;: &quot;info&quot;, &quot;timestamp&quot;: &quot;2025-02-26T22:54:07.477023Z&quot;}</span><br><span class="text-info">2025-02-26 14:54:07,477 [DEBUG] fractiverse_tests: {&quot;event&quot;: &quot;Test debug message&quot;, &quot;level&quot;: &quot;debug&quot;, &quot;timestamp&quot;: &quot;2025-02-26T22:54:07.477157Z&quot;}</span><br><span class="text-info">2025-02-26 14:54:07,477 [INFO] fractiverse_tests: {&quot;event&quot;: &quot;Test info message&quot;, &quot;level&quot;: &quot;info&quot;, &quot;timestamp&quot;: &quot;2025-02-26T22:54:07.477228Z&quot;}</span><br><span class="text-info">2025-02-26 14:54:07,477 [WARNING] fractiverse_tests: {&quot;event&quot;: &quot;Test warning message&quot;, &quot;level&quot;: &quot;warning&quot;, &quot;timestamp&quot;: &quot;2025-02-26T22:54:07.477291Z&quot;}</span><br><span class="text-info">2025-02-26 14:54:07,477 [ERROR] fractiverse_tests: {&quot;event&quot;: &quot;Test error message&quot;, &quot;level&quot;: &quot;error&quot;, &quot;timestamp&quot;: &quot;2025-02-26T22:54:07.477356Z&quot;}</span><br><span class="text-info">2025-02-26 14:54:07,477 [CRITICAL] fractiverse_tests: {&quot;event&quot;: &quot;Test critical message&quot;, &quot;level&quot;: &quot;critical&quot;, &quot;timestamp&quot;: &quot;2025-02-26T22:54:07.477413Z&quot;}</span><br><span class="text-info">2025-02-26 14:54:07,477 [INFO] fractiverse_tests: {&quot;event&quot;: &quot;Completed logging tests successfully&quot;, &quot;level&quot;: &quot;info&quot;, &quot;timestamp&quot;: &quot;2025-02-26T22:54:07.477477Z&quot;}</span><br><span class="text-info">2025-02-26 14:54:07,477 [INFO] fractiverse_tests: {&quot;event&quot;: &quot;Starting visualization tests&quot;, &quot;level&quot;: &quot;info&quot;, &quot;timestamp&quot;: &quot;2025-02-26T22:54:07.477554Z&quot;}</span><br><span class="text-info">2025-02-26 14:54:07,477 [INFO] fractiverse_tests: {&quot;event&quot;: &quot;Completed visualization tests successfully&quot;, &quot;level&quot;: &quot;info&quot;, &quot;timestamp&quot;: &quot;2025-02-26T22:54:07.477614Z&quot;}</span><br><span class="text-info">2025-02-26 14:54:07,477 [INFO] fractiverse_tests: {&quot;event&quot;: &quot;Starting module tests&quot;, &quot;level&quot;: &quot;info&quot;, &quot;timestamp&quot;: &quot;2025-02-26T22:54:07.477688Z&quot;}</span><br><span class="text-info">2025-02-26 14:54:07,477 [INFO] fractiverse_tests: {&quot;event&quot;: &quot;Completed module tests successfully&quot;, &quot;level&quot;: &quot;info&quot;, &quot;timestamp&quot;: &quot;2025-02-26T22:54:07.477747Z&quot;}</span><br><span class="text-info">2025-02-26 14:54:07,521 [DEBUG] matplotlib.pyplot: Loaded backend qtagg version 6.7.1.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            $(document).ready(function() {
+                $('#moduleTable').DataTable({
+                    order: [[4, 'desc']],
+                    pageLength: 25
+                });
+            });
+        </script>
+    </body>
+    </html>
+    

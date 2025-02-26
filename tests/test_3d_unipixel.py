@@ -1,5 +1,5 @@
 import numpy as np
-from fractiverse.operators import Unipixel, FractiNet
+import fractiverse.operators
 
 def test_3d_unipixel_operations():
     try:
