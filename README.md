@@ -11,3 +11,14 @@ This module includes:
 
 pip install fractiverse
 
+
+## 🔄 Development Branches
+
+### operator-integration
+- Purpose: Integrate new FractiVerse 1.0 Python Extension Operators
+- Status: In Progress
+- Documentation: [Operator Integration](docs/OPERATOR_INTEGRATION.md)
+- Test Suite: [Integration Tests](tests/test_integration.py)
+
+### Testing
+eof
