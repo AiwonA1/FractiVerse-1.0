@@ -1,0 +1,12 @@
+[
+  {
+    "timestamp": "2025-02-27T21:12:33.222874",
+    "type": "expansion_start",
+    "details": {
+      "target_fpu": 1000,
+      "starting_fpu": 0.01
+    },
+    "fpu_level": 0.0001,
+    "cognition_level": 0.0001
+  }
+]

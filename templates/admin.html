@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FractiVerse Admin</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌌 FractiVerse Admin</h1>
+            <div id="connection-status">Connecting...</div>
+        </header>
+
+        <div class="grid">
+            <!-- Component Status -->
+            <div class="card">
+                <h2>Component Status</h2>
+                <div id="component-status"></div>
+            </div>
+
+            <!-- Cognitive Metrics -->
+            <div class="card">
+                <h2>Cognitive System</h2>
+                <div id="cognitive-metrics"></div>
+                <canvas id="coherence-chart"></canvas>
+            </div>
+
+            <!-- Network Status -->
+            <div class="card">
+                <h2>Network Status</h2>
+                <div id="network-metrics"></div>
+                <canvas id="network-chart"></canvas>
+            </div>
+
+            <!-- Blockchain Status -->
+            <div class="card">
+                <h2>Blockchain Status</h2>
+                <div id="blockchain-metrics"></div>
+                <canvas id="blockchain-chart"></canvas>
+            </div>
+
+            <!-- Treasury Status -->
+            <div class="card">
+                <h2>Treasury Status</h2>
+                <div id="treasury-metrics"></div>
+                <canvas id="treasury-chart"></canvas>
+            </div>
+
+            <!-- Pattern Viewer -->
+            <div class="card wide">
+                <h2>Pattern Viewer</h2>
+                <div id="pattern-viewer"></div>
+            </div>
+
+            <!-- Event Log -->
+            <div class="card wide">
+                <h2>Event Log</h2>
+                <div id="event-log"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/charts.js"></script>
+    <script src="/static/admin.js"></script>
+</body>
+</html> 

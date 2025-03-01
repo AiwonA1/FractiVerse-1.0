@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FractiCognition Interface</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            margin: 20px;
+        }
+        #status, #activity, #metrics, #command-interface {
+            border: 1px solid #00ff00;
+            padding: 10px;
+            margin: 10px 0;
+            white-space: pre;
+        }
+        .log {
+            margin: 5px 0;
+        }
+        #command-input {
+            width: 100%;
+            background: #2a2a2a;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 5px;
+            font-family: monospace;
+        }
+        #learning-display {
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid #00ff00;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .pattern-info {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 2px solid #00ff00;
+        }
+        .cognitive-growth {
+            color: #00ffff;
+        }
+        .memory-integration {
+            color: #ffff00;
+        }
+    </style>
+</head>
+<body>
+    <h2>🧠 FractiCognition Monitor</h2>
+    
+    <div id="command-interface">
+        <h3>💭 Cognitive Interface</h3>
+        <input type="text" id="command-input" 
+               placeholder="Enter text to process..." 
+               onkeypress="if(event.keyCode==13) sendCommand()">
+    </div>
+
+    <div id="status">System Status: Initializing...</div>
+    
+    <div id="metrics">
+        <h3>Cognitive Metrics:</h3>
+        <pre id="cognitive-metrics">Loading...</pre>
+        <h3>Memory Status:</h3>
+        <pre id="memory-metrics">Loading...</pre>
+    </div>
+
+    <div id="learning-display">
+        <h3>🧠 Learning Progress:</h3>
+        <div id="learning-content"></div>
+    </div>
+
+    <div id="activity">
+        <h3>📝 Activity Log:</h3>
+        <div id="activity-content"></div>
+    </div>
+
+    <script>
+        // Wait for page to load
+        window.addEventListener('load', function() {
+            const host = window.location.hostname || 'localhost';
+            const port = window.location.port || '8000';
+            
+            // Create WebSocket connection
+            const ws = new WebSocket(`ws://${host}:${port}/ws`);
+            
+            window.sendCommand = function() {
+                const input = document.getElementById('command-input');
+                const command = input.value;
+                if (command) {
+                    ws.send(command);
+                    input.value = '';
+                    
+                    // Log the command
+                    const activity = document.getElementById('activity-content');
+                    activity.innerHTML = `📤 Sent: ${command}\n` + activity.innerHTML;
+                }
+            };
+            
+            ws.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                
+                if (data.type === 'status') {
+                    const metrics = data.detailed_metrics;
+                    document.getElementById('cognitive-metrics').innerHTML = 
+                        `FPU Level: ${metrics.fpu_level}\n` +
+                        `Pattern Recognition: ${metrics.pattern_recognition}\n` +
+                        `Learning Efficiency: ${metrics.learning_efficiency}\n` +
+                        `Reasoning Depth: ${metrics.reasoning_depth}`;
+                    
+                    document.getElementById('memory-metrics').innerHTML = 
+                        `Memory Coherence: ${metrics.memory_coherence}\n` +
+                        `Integration Level: ${metrics.integration_level}\n` +
+                        `Pattern Count: ${metrics.pattern_count}\n` +
+                        `Learning Stage: ${metrics.learning_stage}`;
+                }
+                else if (data.type === 'activity') {
+                    const learning = document.getElementById('learning-content');
+                    const activity = document.getElementById('activity-content');
+                    
+                    if (data.activity.type === 'learning_details') {
+                        learning.innerHTML = `<div class="pattern-info">
+                            ${data.activity.message}
+                        </div>` + learning.innerHTML;
+                    }
+                    else if (data.activity.type === 'integration_details') {
+                        learning.innerHTML = `<div class="pattern-info memory-integration">
+                            ${data.activity.message}
+                        </div>` + learning.innerHTML;
+                    }
+                    else if (data.activity.type === 'pattern_details') {
+                        learning.innerHTML = `<div class="pattern-info cognitive-growth">
+                            ${data.activity.message}
+                        </div>` + learning.innerHTML;
+                    }
+                    
+                    activity.innerHTML = `${data.activity.message}\n` + activity.innerHTML;
+                }
+                else if (data.type === 'message') {
+                    const activity = document.getElementById('activity-content');
+                    activity.innerHTML = `📥 Response: ${data.content}\n` + activity.innerHTML;
+                }
+            };
+            
+            ws.onopen = function() {
+                document.getElementById('status').innerHTML = 'System Status: Connected ✅';
+                console.log('WebSocket connected');
+            };
+            
+            ws.onclose = function() {
+                document.getElementById('status').innerHTML = 'System Status: Disconnected ❌';
+                console.log('WebSocket disconnected');
+            };
+            
+            ws.onerror = function(error) {
+                console.error('WebSocket error:', error);
+                document.getElementById('status').innerHTML = 'System Status: Error ❌';
+            };
+        });
+    </script>
+</body>
+</html> 

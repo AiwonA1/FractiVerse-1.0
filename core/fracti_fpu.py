@@ -3,13 +3,21 @@
 Manages dynamic processing load, AI efficiency, and FractiChain transactions.
 """
 
+from .base import FractiComponent
 import random
 import time
 import psutil  # ✅ Added for system metrics
 
 
-class FractiProcessingUnit:
+class FractiProcessingUnit(FractiComponent):
+    """Fractal Processing Unit - Handles core processing tasks"""
+    
+    @property
+    def required_dependencies(self) -> list[str]:
+        return ['memory_manager', 'metrics_manager']
+    
     def __init__(self):
+        super().__init__()
         self.base_fpu_capacity = 100  # Baseline processing power units
         self.current_load = 0  # Real-time cognitive load
         self.scale_factor = 1.0  # Adjusts dynamically
@@ -17,6 +25,37 @@ class FractiProcessingUnit:
         self.transaction_count = 0  # Tracks FractiChain transactions
         self.active_nodes = random.randint(5, 50)  # Simulated AI nodes count
         self.last_balancing_status = "⚖️ Load Balancing Pending"
+        self.processing_queue = []
+        self.processing_history = []
+        
+        # Initialize processing metrics
+        self.metrics = {
+            'cpu_usage': 0.0,
+            'memory_usage': 0.0,
+            'current_load': 0.0,
+            'scale_factor': 1.0,
+            'active_nodes': self.active_nodes,
+            'transactions': 0
+        }
+
+    async def _initialize(self) -> None:
+        """Component-specific initialization"""
+        try:
+            # Initialize base metrics
+            self.metrics.update({
+                'cpu_usage': self.get_cpu_usage(),
+                'memory_usage': self.get_memory_usage(),
+                'current_load': self.current_load,
+                'scale_factor': self.scale_factor,
+                'active_nodes': self.active_nodes,
+                'transactions': self.transaction_count
+            })
+            
+            self.logger.info("Processing unit ready")
+            
+        except Exception as e:
+            self.logger.error(f"FPU initialization error: {str(e)}")
+            raise
 
     # -------------------------
     # ✅ FPU SCALING FUNCTIONS
@@ -96,6 +135,31 @@ class FractiProcessingUnit:
             "FractiChain Transactions": self.get_transaction_count(),
             "Last Load Balancing": self.last_balancing_status,
         }
+
+    def process(self, data):
+        """Process incoming data"""
+        try:
+            # Add to processing queue
+            self.processing_queue.append(data)
+            
+            # Process data (basic implementation)
+            result = self._process_data(data)
+            
+            # Store in history
+            self.processing_history.append({
+                'input': data,
+                'output': result
+            })
+            
+            return result
+        except Exception as e:
+            print(f"❌ Processing error: {str(e)}")
+            return None
+            
+    def _process_data(self, data):
+        """Internal data processing method"""
+        # Basic processing logic
+        return f"Processed: {data}"
 
 
 if __name__ == "__main__":

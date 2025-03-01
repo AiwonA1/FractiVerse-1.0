@@ -1,15 +1,24 @@
 # Core Libraries
-numpy
+numpy<2.0.0  # Pin to numpy 1.x to avoid compatibility issues
+torch>=2.0.0
+scipy>=1.7.0
 pandas
 networkx
 psutil
 requests
+tornado>=6.1
+aiohttp>=3.8.0
+websockets>=10.0
+wikipedia  # Add wikipedia package
 
 # Web Frameworks
 flask
-fastapi
-uvicorn
-websockets
+fastapi>=0.68.0
+uvicorn>=0.15.0
 
 # Security & Cryptography
 pycryptodomex
+python-dotenv==1.0.0
+
+# Comment out editable mode temporarily for testing
+# -e core/  # Local FractiVerse core package
